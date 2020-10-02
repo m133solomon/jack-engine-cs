@@ -74,10 +74,6 @@ namespace Jack.Graphics
             }
         }
         ";
-
-        public Matrix4 ProjectionMatrix { get; set; }
-        public Matrix4 ViewMatrix { get; set; }
-
         private int _batchSize;
         private int _quadCount = 0;
 
@@ -97,9 +93,6 @@ namespace Jack.Graphics
 
         public SpriteBatch(JackApp jack, int batchSize = 1000)
         {
-            ProjectionMatrix = Matrix4.CreateOrthographic(jack.WindowSize.Width, jack.WindowSize.Height, -1.0f, 1.0f);
-            ViewMatrix = Matrix4.Identity;
-
             _batchSize = batchSize;
 
             _quadShader = Shader.FromStrings(_quadVertShaderSource, _quadFragmentShaderSource);
@@ -141,31 +134,22 @@ namespace Jack.Graphics
 
             return indices;
         }
-        
-        public void TranslateViewMatrix(Vector2 amount)
-        {
-            Matrix4 translation = Matrix4.CreateTranslation(new Vector3(amount.X, amount.Y, 0.0f));
-            ViewMatrix *= translation;
-        }
-        
-        public void ScaleViewMatrix(Vector2 amount)
-        {
-            Matrix4 scale = Matrix4.CreateScale(new Vector3(amount.X, amount.Y, 0.0f));
-            ViewMatrix *= scale;
-        }
 
         private bool _beginCalled = false;
-        public void Begin()
+        private Camera _camera;
+        public void Begin(Camera camera)
         {
             if (_beginCalled)
             {
                 throw new InvalidOperationException("Begin was already called once");
             }
             _beginCalled = true;
+            _camera = camera;
 
             _vertices = new float[VerticesAmount];
             _textures = new List<Texture>(TEXTURE_SLOTS_COUNT);
-            Matrix4 viewProj = ProjectionMatrix * ViewMatrix;
+
+            Matrix4 viewProj = camera.ProjectionMatrix * camera.ViewMatrix;
 
             _quadShader.SetUniform("u_Textures", _textureSlots);
             _quadShader.Bind();
@@ -213,7 +197,7 @@ namespace Jack.Graphics
             if (_quadCount >= _batchSize || _textures.Count >= TEXTURE_SLOTS_COUNT)
             {
                 End();
-                Begin();
+                Begin(_camera);
             }
 
             float textureIndex = 0;
@@ -241,7 +225,7 @@ namespace Jack.Graphics
             if (_quadCount >= _batchSize)
             {
                 End();
-                Begin();
+                Begin(_camera);
             }
             SetVertexData(position, size, rotation, 0.0f, color);
             _quadCount++;

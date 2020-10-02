@@ -4,10 +4,6 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
-// TODO: input management
-// TODO: z-sorting?
-// TODO: frambuffer - rendertargets
-
 namespace Jack
 {
     public abstract class JackApp : IDisposable
@@ -17,7 +13,7 @@ namespace Jack
         private Size _windowSize;
         public Size WindowSize
         {
-            get => _windowSize;
+            get => _window.ClientSize;
             set
             {
                 _windowSize = value;
@@ -76,6 +72,7 @@ namespace Jack
 
         public delegate void JackEventHandler();
         public event JackEventHandler OnExit;
+        public event JackEventHandler OnWindowResize;
 
         public JackApp()
         {
@@ -98,7 +95,14 @@ namespace Jack
             _window.UpdateFrame += new EventHandler<FrameEventArgs>(OnUpdateFrame);
             _window.RenderFrame += new EventHandler<FrameEventArgs>(OnRenderFrame);
             _window.Unload += new EventHandler<EventArgs>(OnUnload);
+            _window.Resize += new EventHandler<EventArgs>(OnResize);
             _window.Run();
+        }
+        
+        private void OnResize(object sender, EventArgs e)
+        {
+            _windowSize = new Size(_window.Width, _window.Height);
+            OnWindowResize();
         }
 
         private void OnLoad(object sender, EventArgs e)
