@@ -36,6 +36,15 @@ namespace Jack.Graphics
 
         public static Shader FromFiles(string vertexPath, string fragmentPath)
         {
+            if (!File.Exists(vertexPath))
+            {
+                throw new FileLoadException("Vertex shader not found: " + vertexPath);
+            }
+            if (!File.Exists(fragmentPath))
+            {
+                throw new FileLoadException("Fragment shader not found: " + fragmentPath);
+            }
+
             string vertexSource = File.ReadAllText(vertexPath);
             string fragmentSource = File.ReadAllText(fragmentPath);
 

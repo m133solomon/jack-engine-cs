@@ -110,6 +110,7 @@ namespace Jack
 
         private void OnUpdateFrame(object sender, FrameEventArgs e)
         {
+            Update((float)e.Time);
         }
 
         private void OnRenderFrame(object sender, FrameEventArgs e)
@@ -119,7 +120,7 @@ namespace Jack
             GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            Draw((float)e.Time);
+            Draw();
 
             _window.SwapBuffers();
         }
@@ -130,7 +131,8 @@ namespace Jack
         }
 
         protected abstract void Load();
-        protected abstract void Draw(float deltaTime);
+        protected abstract void Update(float deltaTime);
+        protected abstract void Draw();
         protected abstract void Exit();
 
         public void Dispose()

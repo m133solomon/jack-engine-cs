@@ -1,6 +1,6 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
-using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -17,6 +17,11 @@ namespace Jack.Graphics
 
         public Texture(string path)
         {
+            if (!File.Exists(path))
+            {
+                throw new FileLoadException("Texture not found: " + path);
+            }
+
             Image<Rgba32> image = (Image<Rgba32>)Image.Load(path);
             image.Mutate(x => x.Flip(FlipMode.Vertical));
 
@@ -26,33 +31,22 @@ namespace Jack.Graphics
             {
                 fixed (void* data = &MemoryMarshal.GetReference(image.GetPixelRowSpan(0)))
                 {
-                    Load(data, image.Width, image.Height);
+                    Load((IntPtr)data, image.Width, image.Height);
                 }
             }
         }
         
-        public Texture(Span<byte> data, int width, int height)
-        {
-            unsafe
-            {
-                fixed (void* d = &data[0])
-                {
-                    Load(d, width, height);
-                }
-            }
-        }
-        
-        public unsafe Texture(void *data, int width, int height)
+        public Texture(IntPtr data, int width, int height)
         {
             Load(data, width, height);
         }
-
-        private unsafe void Load(void* data, int width, int height)
+        
+        private void Load(IntPtr data, int width, int height)
         {
             _id = GL.GenTexture();
             Bind();
-            
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)data);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
