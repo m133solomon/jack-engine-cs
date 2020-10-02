@@ -1,0 +1,15 @@
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.csprojAssemblyReference.cache
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.AssemblyInfoInputs.cache
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.AssemblyInfo.cs
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.csproj.CoreCompileInputs.cache
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/CS_Jack.deps.json
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/CS_Jack.runtimeconfig.json
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/CS_Jack.runtimeconfig.dev.json
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/CS_Jack.dll
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/CS_Jack.pdb
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/OpenTK.dll
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.csproj.CopyComplete
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.dll
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.pdb
+/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/Debug/netcoreapp3.1/CS_Jack.genruntimeconfig.cache
+/Users/mihaisolomon/Documents/Projects/CS_Jack/bin/Debug/netcoreapp3.1/SixLabors.ImageSharp.dll

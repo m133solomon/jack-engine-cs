@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/mihaisolomon/Documents/Projects/CS_Jack/CS_Jack.csproj": {}
+  },
+  "projects": {
+    "/Users/mihaisolomon/Documents/Projects/CS_Jack/CS_Jack.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/mihaisolomon/Documents/Projects/CS_Jack/CS_Jack.csproj",
+        "projectName": "CS_Jack",
+        "projectPath": "/Users/mihaisolomon/Documents/Projects/CS_Jack/CS_Jack.csproj",
+        "packagesPath": "/Users/mihaisolomon/.nuget/packages/",
+        "outputPath": "/Users/mihaisolomon/Documents/Projects/CS_Jack/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/mihaisolomon/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "OpenTK": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
