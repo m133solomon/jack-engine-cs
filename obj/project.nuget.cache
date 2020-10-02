@@ -1,11 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "W6gd8o7wECpLEp1FAeU611c7V0qFmEUjhcKwy7zkmFg7ttAkyI9XlIwYo8AQjoniINvfpOSsr3h/ZNIIB7hWLg==",
+  "dgSpecHash": "Xa0yoJeDOJwFKc+lcEyBSXuXZrbFUy/R2GkqJnzUP+k9X9xfwtOlTxu+tnigejgVfPR3MDIM9T500tr2GROmdA==",
   "success": true,
   "projectFilePath": "/Users/mihaisolomon/Documents/Projects/CS_Jack/CS_Jack.csproj",
   "expectedPackageFiles": [
+    "/Users/mihaisolomon/.nuget/packages/freetypesharp/1.1.3/freetypesharp.1.1.3.nupkg.sha512",
+    "/Users/mihaisolomon/.nuget/packages/microsoft.netcore.platforms/3.1.0/microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "/Users/mihaisolomon/.nuget/packages/microsoft.win32.systemevents/4.7.0/microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "/Users/mihaisolomon/.nuget/packages/opentk/3.2.0/opentk.3.2.0.nupkg.sha512",
-    "/Users/mihaisolomon/.nuget/packages/sixlabors.imagesharp/1.0.1/sixlabors.imagesharp.1.0.1.nupkg.sha512"
+    "/Users/mihaisolomon/.nuget/packages/runtime.osx.10.10-x64.corecompat.system.drawing/5.8.64/runtime.osx.10.10-x64.corecompat.system.drawing.5.8.64.nupkg.sha512",
+    "/Users/mihaisolomon/.nuget/packages/sixlabors.imagesharp/1.0.1/sixlabors.imagesharp.1.0.1.nupkg.sha512",
+    "/Users/mihaisolomon/.nuget/packages/system.drawing.common/4.7.0/system.drawing.common.4.7.0.nupkg.sha512"
   ],
   "logs": [
     {

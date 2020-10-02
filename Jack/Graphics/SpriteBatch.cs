@@ -1,6 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System.Diagnostics;
+using System.IO;
+using System.Collections.Generic;
+
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
@@ -21,14 +27,6 @@ namespace Jack.Graphics
             0.5f, -0.5f,
             -0.5f, -0.5f,
             -0.5f,  0.5f
-        };
-
-        private static readonly float[] _quadTextureCoords =
-        {
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-            0.0f, 1.0f
         };
 
         private static readonly string _quadVertShaderSource = @"
@@ -91,6 +89,8 @@ namespace Jack.Graphics
         private int VertexSize => POSITION_SIZE + COLOR_SIZE + TEX_COORDS_SIZE + TEX_INDEX_SIZE;
         private int VerticesAmount => _batchSize * VertexSize * 4;
 
+        private TextBatch _textBatch;
+
         public SpriteBatch(JackApp jack, int batchSize = 1000)
         {
             _batchSize = batchSize;
@@ -111,7 +111,14 @@ namespace Jack.Graphics
             _quadVao.VertexAttribPointer(2, TEX_COORDS_SIZE, VertexAttribPointerType.Float, VertexSize, POSITION_SIZE + COLOR_SIZE);
             _quadVao.VertexAttribPointer(3, TEX_INDEX_SIZE, VertexAttribPointerType.Float, VertexSize, POSITION_SIZE + COLOR_SIZE + TEX_COORDS_SIZE);
 
+            _textBatch = new TextBatch();
+
             jack.OnExit += Dispose;
+        }
+        
+        public void TextBatchTest()
+        {
+            DrawQuad(Vector2.Zero, new Vector2(100, 100), 0, _textBatch.FontTexture, Color.White);
         }
 
         private int[] GenerateIndices(int quadsAmount)
@@ -156,7 +163,7 @@ namespace Jack.Graphics
             _quadShader.SetUniform("u_MVP", viewProj);
         }
 
-        private void SetVertexData(Vector2 position, Vector2 size, float rotation, float texIndex, Color color)
+        private void SetVertexData(Vector2 position, Vector2 size, Rectangle sourceRectangle, float rotation, float texIndex, Size texSize, Color color)
         {
             int offset = _quadCount * 4 * VertexSize;
 
@@ -165,6 +172,29 @@ namespace Jack.Graphics
             Matrix4 rotationM = Matrix4.CreateRotationZ(rotation);
 
             Matrix4 transform = rotationM * scale * translation;
+
+            Vector2 topRight = new Vector2(
+                1.0f * ((float)sourceRectangle.Width / (float)texSize.Width),
+                1.0f * ((float)sourceRectangle.Height / (float)texSize.Height)
+            );
+            Vector2 botRight = new Vector2(
+                1.0f * ((float)sourceRectangle.Width / (float)texSize.Width),
+                (float)sourceRectangle.Y / (float)texSize.Height
+            );
+            Vector2 botLeft = new Vector2(
+                (float)sourceRectangle.X / (float)texSize.Width,
+                (float)sourceRectangle.Y / (float)texSize.Height
+            );
+            Vector2 topLeft = new Vector2(
+                (float)sourceRectangle.X / (float)texSize.Width,
+                (float)1.0f * (sourceRectangle.Height / (float)texSize.Height)
+            );
+            
+            Vector2[] texCoords =
+            {
+                topRight, botRight,
+                botLeft, topLeft
+            };
 
             for (int i = 0; i < 4; i++)
             {
@@ -181,9 +211,8 @@ namespace Jack.Graphics
                 _vertices[offset + 4] = color.B / 255.0f;
                 _vertices[offset + 5] = color.A / 255.0f;
 
-                // set vertex tex coords
-                _vertices[offset + 6] = _quadTextureCoords[i * 2];
-                _vertices[offset + 7] = _quadTextureCoords[i * 2 + 1];
+                _vertices[offset + 6] = texCoords[i].X;
+                _vertices[offset + 7] = texCoords[i].Y;
 
                 // set vertex tex index
                 _vertices[offset + 8] = texIndex;
@@ -194,13 +223,27 @@ namespace Jack.Graphics
 
         public void DrawQuad(Vector2 position, Vector2 size, float rotation, Texture texture, Color color)
         {
+            Rectangle sourceRectangle = new Rectangle(0, 0, texture.Size.Width, texture.Size.Height);
+            DrawQuad(position, size, sourceRectangle, rotation, texture, color);
+        }
+        
+        public void DrawQuad(Vector2 position, Vector2 size, Rectangle sourceRectangle, float rotation, Texture texture, Color color)
+        {
             if (_quadCount >= _batchSize || _textures.Count >= TEXTURE_SLOTS_COUNT)
             {
                 End();
                 Begin(_camera);
             }
 
-            float textureIndex = 0;
+            int textureIndex = CheckTextureIndex(texture);
+            SetVertexData(position, size, sourceRectangle, rotation, textureIndex, texture.Size,color);
+
+            _quadCount++;
+        }
+        
+        private int CheckTextureIndex(Texture texture)
+        {
+            int textureIndex = 0;
             for (int i = 0; i < _textures.Count; i++)
             {
                 if (_textures[i].Id == texture.Id)
@@ -215,9 +258,7 @@ namespace Jack.Graphics
                 _textures.Add(texture);
             }
 
-            SetVertexData(position, size, rotation, textureIndex, color);
-
-            _quadCount++;
+            return textureIndex;
         }
 
         public void DrawQuad(Vector2 position, Vector2 size, float rotation, Color color)
@@ -227,7 +268,7 @@ namespace Jack.Graphics
                 End();
                 Begin(_camera);
             }
-            SetVertexData(position, size, rotation, 0.0f, color);
+            SetVertexData(position, size, new Rectangle(0, 0, 1, 1), rotation, 0.0f, new Size(1, 1), color);
             _quadCount++;
         }
 
@@ -261,6 +302,85 @@ namespace Jack.Graphics
             _quadVao.Dispose();
             _quadVbo.Dispose();
             _quadIbo.Dispose();
+        }
+
+        private class TextBatch
+        {
+            private int _glyphsPerLine = 16;
+            private int _glyphLineCount = 16;
+            private int _glyphWidth = 11;
+            private int _glyphHeight = 20;
+            private int _charXSpacing = 11;
+            private string _text = "hello world";
+
+            private int _atlasOffsetX = -3;
+            private int _atlasOffsetY = -1;
+            private int _fontSize = 14;
+            private bool _bitmapFont = false;
+            private string _fromFile;
+            private string _fontName = "Courier";
+            private string _fontBitmapFileName;
+
+            private Texture _fontTexture;
+            public Texture FontTexture => _fontTexture;
+
+            public TextBatch()
+            {
+                _fontBitmapFileName = _fontName + ".png";
+
+                GenerateFontImage();
+                
+                _fontTexture = new Texture(_fontBitmapFileName);
+            }
+
+            public void DrawText(Vector2 position, string text)
+            {
+                float uStep = (float)_glyphWidth / (float)_fontTexture.Size.Width;
+                float vStep = (float)_glyphHeight / (float)_fontTexture.Size.Height;
+
+                for (int n = 0; n < text.Length; n++)
+                {
+                    char idx = text[n];
+                    float u = (float)(idx % _glyphsPerLine) * uStep;
+                    float v = (float)(idx / _glyphsPerLine) * vStep;
+                }
+            }
+
+            private void GenerateFontImage()
+            {
+                int bitmapWidth = _glyphsPerLine * _glyphWidth;
+                int bitmapHeight = _glyphLineCount * _glyphHeight;
+                
+                using (Bitmap bitmap = new Bitmap(bitmapWidth, bitmapHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                {
+                    Font font = new Font(new FontFamily(_fontName), _fontSize);
+                
+                    using (var graphics = System.Drawing.Graphics.FromImage(bitmap))
+                    {
+                        if (_bitmapFont)
+                        {
+                            graphics.SmoothingMode = SmoothingMode.None;
+                            graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixel;
+                        }
+                        else
+                        {
+                            graphics.SmoothingMode = SmoothingMode.HighQuality;
+                            graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                        }
+
+                        for (int p = 0; p < _glyphLineCount; p++)
+                        {
+                            for (int n = 0; n < _glyphsPerLine; n++)
+                            {
+                                char c = (char)(n + p * _glyphsPerLine);
+                                graphics.DrawString
+                                    (c.ToString(), font, Brushes.White, n * _glyphWidth + _atlasOffsetX, p * _glyphHeight + _atlasOffsetY);
+                            }
+                        }
+                    }
+                    bitmap.Save(_fontBitmapFileName);
+                }
+            }
         }
     }
 }

@@ -36,8 +36,8 @@ namespace CS_Jack
             {
                 _spriteBatch = new SpriteBatch(this);
                 _camera = new Camera(this, WindowSize.Width, WindowSize.Height);
-                _texture = new Texture("./avatar.png");
-                _texture2 = new Texture("./glazing_1.png");
+                _texture = new Texture("res/avatar.png");
+                _texture2 = new Texture("res/glazing_1.png");
             }
             
             private void MoveCamera()
@@ -81,17 +81,24 @@ namespace CS_Jack
 
                 _spriteBatch.Begin(_camera);
 
-                int squareWidth = 5000;
+                _spriteBatch.TextBatchTest();
+                
+                _spriteBatch.DrawQuad(new Vector2(-200, 0), new Vector2(30, 30), MathF.PI / 4, Color.Red);
+                // _spriteBatch.DrawQuad(new Vector2(-200, -200), new Vector2(50, 50), MathF.PI / 7, _texture, Color.White);
+                Rectangle srcRect = new Rectangle(0, 0, _texture.Size.Width / 2, _texture.Size.Height / 2);
+                _spriteBatch.DrawQuad(new Vector2(-200, -200), new Vector2(50, 50), srcRect, MathF.PI / 7, _texture, Color.White);
 
-                int quadCount = 0;
-                for (int i = -squareWidth / 2; i < squareWidth / 2; i += 30)
-                {
-                    for (int j = -squareWidth / 2; j < squareWidth / 2; j += 30)
-                    {
-                        _spriteBatch.DrawQuad(new Vector2(i, j), new Vector2(30, 30), 0, _texture, Color.White);
-                        quadCount++;
-                    }
-                }
+                // int squareWidth = 5000;
+
+                // int quadCount = 0;
+                // for (int i = -squareWidth / 2; i < squareWidth / 2; i += 30)
+                // {
+                    // for (int j = -squareWidth / 2; j < squareWidth / 2; j += 30)
+                    // {
+                        // _spriteBatch.DrawQuad(new Vector2(i, j), new Vector2(30, 30), 0, _texture, Color.White);
+                        // quadCount++;
+                    // }
+                // }
 
                 _spriteBatch.End();
             }
