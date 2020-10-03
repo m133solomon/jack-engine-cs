@@ -23,7 +23,8 @@ namespace Jack.Graphics
             }
 
             Image<Rgba32> image = (Image<Rgba32>)Image.Load(path);
-            image.Mutate(x => x.Flip(FlipMode.Vertical));
+            // note: this apply this based on ortho projection
+            // image.Mutate(x => x.Flip(FlipMode.Vertical));
 
             Size = new System.Drawing.Size(image.Width, image.Height);
             
@@ -50,12 +51,14 @@ namespace Jack.Graphics
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            
+
             // todo: find a way to change linear to neareast
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            
+            Unbind();
         }
         
         public void Bind(TextureUnit slot = TextureUnit.Texture0)

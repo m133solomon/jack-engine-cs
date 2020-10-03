@@ -9,6 +9,7 @@ namespace CS_Jack
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             using (var app = new Application())
@@ -23,7 +24,6 @@ namespace CS_Jack
             {
                 WindowTitle = "Jack Sandbox";
                 ClearColor = Color.Black;
-                WindowVsync = VSyncMode.Off;
             }
 
             private SpriteBatch _spriteBatch;
@@ -53,11 +53,11 @@ namespace CS_Jack
                 }
                 if (state.IsKeyDown(Key.A))
                 {
-                    _camera.Position += new Vector2(-0.01f, 0);
+                    _camera.Position += new Vector2(0.01f, 0);
                 }
                 if (state.IsKeyDown(Key.D))
                 {
-                    _camera.Position += new Vector2(0.01f, 0);
+                    _camera.Position += new Vector2(-0.01f, 0);
                 }
 
                 if (state.IsKeyDown(Key.Q))
@@ -82,13 +82,8 @@ namespace CS_Jack
                 _spriteBatch.Begin(_camera);
 
                 _spriteBatch.TextBatchTest();
-                
-                _spriteBatch.DrawQuad(new Vector2(-200, 0), new Vector2(30, 30), MathF.PI / 4, Color.Red);
-                // _spriteBatch.DrawQuad(new Vector2(-200, -200), new Vector2(50, 50), MathF.PI / 7, _texture, Color.White);
-                Rectangle srcRect = new Rectangle(0, 0, _texture.Size.Width / 2, _texture.Size.Height / 2);
-                _spriteBatch.DrawQuad(new Vector2(-200, -200), new Vector2(50, 50), srcRect, MathF.PI / 7, _texture, Color.White);
 
-                // int squareWidth = 5000;
+                // int squareWidth = 3700;
 
                 // int quadCount = 0;
                 // for (int i = -squareWidth / 2; i < squareWidth / 2; i += 30)
@@ -105,6 +100,8 @@ namespace CS_Jack
 
             protected override void Exit()
             {
+                Console.WriteLine("hello");
+                Environment.Exit(0);
             }
         }
     }

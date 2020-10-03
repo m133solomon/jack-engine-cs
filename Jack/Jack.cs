@@ -102,7 +102,10 @@ namespace Jack
         private void OnResize(object sender, EventArgs e)
         {
             _windowSize = new Size(_window.Width, _window.Height);
-            OnWindowResize();
+            if (OnWindowResize != null)
+            {
+                OnWindowResize();
+            }
         }
 
         private void OnLoad(object sender, EventArgs e)
@@ -131,7 +134,10 @@ namespace Jack
 
         private void OnUnload(object sender, EventArgs e)
         {
-            OnExit();
+            if (OnExit != null)
+            {
+                OnExit();
+            }
         }
 
         protected abstract void Load();

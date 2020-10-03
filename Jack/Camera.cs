@@ -47,12 +47,16 @@ namespace Jack
             UpdateProjectionMatrix(_size.Width, _size.Height);
 
             _app = app;
-            _app.OnWindowResize += OnResize;
+            // _app.OnWindowResize += OnResize;
         }
         
         private void UpdateProjectionMatrix(int width, int height)
         {
+            // origin in center, y is up
             ProjectionMatrix = Matrix4.CreateOrthographic(width, height, -1.0f, 1.0f);
+            
+            // origin in top left, y is down
+            // ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1.0f, 1.0f);
         }
         
         private void OnResize()
