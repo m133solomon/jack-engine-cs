@@ -304,7 +304,7 @@ namespace Jack.Graphics
 
                 DrawQuad(new Vector2(x, position.Y), new Vector2(font.GlyphWidth * scale.X, font.GlyphHeight * scale.Y), srcRect, 0, font.FontTexture, color);
 
-                x += (font.FontSize * scale.X * 0.4f);
+                x += (scale.X * font.CharSpacing);
             }
         }
 

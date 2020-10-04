@@ -28,7 +28,7 @@ namespace Jack.Graphics
         {
             FontName = fontName;
             FontSize = size;
-            CharSpacing = (int)(FontSize * 0.8f);
+            CharSpacing = (int)(FontSize * 0.2f);
 
             FontTexture = new Texture(MakeFontTexture());
         }

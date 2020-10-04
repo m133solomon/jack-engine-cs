@@ -49,29 +49,29 @@ namespace Jack
             _app = app;
             // _app.OnWindowResize += OnResize;
         }
-        
+
         private void UpdateProjectionMatrix(int width, int height)
         {
             // origin in center, y is up
             ProjectionMatrix = Matrix4.CreateOrthographic(width, height, -1.0f, 1.0f);
-            
+
             // origin in top left, y is down
             // ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1.0f, 1.0f);
         }
-        
+
         private void OnResize()
         {
             _size = _app.WindowSize;
             UpdateProjectionMatrix(_size.Width, _size.Height);
         }
-        
+
         public void TranslateMatrix(Vector2 amount)
         {
             _position += amount;
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(amount.X, amount.Y, 0.0f));
             ViewMatrix *= translation;
         }
-        
+
         public void ScaleMatrix(Vector2 amount)
         {
             _scale *= amount;
@@ -80,7 +80,7 @@ namespace Jack
         }
         public void ScaleMatrix(float amount)
         {
-            ScaleMatrix(new Vector2(amount));;
+            ScaleMatrix(new Vector2(amount)); ;
         }
     }
 }

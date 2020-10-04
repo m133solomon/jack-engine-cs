@@ -52,20 +52,6 @@ namespace Jack
             }
         }
 
-        private Color _clearColor;
-        public Color ClearColor
-        {
-            get => _clearColor;
-            set
-            {
-                _clearColor = value;
-                if (_window != null)
-                {
-                    GL.ClearColor(value);
-                }
-            }
-        }
-
         protected int OpenGLMajorVersion { get; set; } = 3;
         protected int OpenGLMinorVersion { get; set; } = 3;
         protected GameWindowFlags WindowFlags { get; set; } = GameWindowFlags.Default;
@@ -78,7 +64,6 @@ namespace Jack
         {
             _windowSize = new Size(800, 600);
             _windowTitle = "Jack Application";
-            _clearColor = Color.CornflowerBlue;
             _windowVsync = VSyncMode.On;
         }
 
@@ -110,8 +95,10 @@ namespace Jack
 
         private void OnLoad(object sender, EventArgs e)
         {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
 
-            GL.ClearColor(_clearColor);
             Load();
         }
 
@@ -120,13 +107,14 @@ namespace Jack
             Update((float)e.Time);
         }
 
+        public void Clear(Color color)
+        {
+            GL.ClearColor(color);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+        }
+
         private void OnRenderFrame(object sender, FrameEventArgs e)
         {
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
             Draw();
 
             _window.SwapBuffers();

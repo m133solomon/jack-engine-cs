@@ -23,7 +23,7 @@ namespace CS_Jack
             public Application() : base()
             {
                 WindowTitle = "Jack Sandbox";
-                ClearColor = Color.FromArgb(30, 30, 30);
+                WindowVsync = VSyncMode.On;
             }
 
             private SpriteBatch _spriteBatch;
@@ -35,6 +35,8 @@ namespace CS_Jack
 
             SpriteFont _font;
 
+            RenderTarget _renderTarget;
+
             protected override void Load()
             {
                 _spriteBatch = new SpriteBatch(this);
@@ -43,7 +45,9 @@ namespace CS_Jack
                 _texture = new Texture("res/avatar.png");
                 _texture2 = new Texture("res/glazing_1.png");
 
-                _font = new SpriteFont("Arial", 37);
+                _font = new SpriteFont("Consolas", 37);
+
+                _renderTarget = new RenderTarget(100, 100);
             }
 
             private void MoveCamera()
@@ -83,30 +87,29 @@ namespace CS_Jack
                 MoveCamera();
             }
 
+            // NOTE: start working on render target thingy
+
             protected override void Draw()
             {
-                _spriteBatch.Begin(_camera);
+                Clear(Color.FromArgb(20, 20, 20));
 
-                int squareWidth = 3700;
+                int squareWidth = 5000;
                 int step = 30;
                 int quadCount = 0;
+
+                _spriteBatch.Begin(_camera);
 
                 for (int i = -squareWidth / 2; i < squareWidth / 2; i += step)
                 {
                     for (int j = -squareWidth / 2; j < squareWidth / 2; j += step)
                     {
-                        float pt = (float)Math.Sin(DateTime.Now.Millisecond / 1000.0f * Math.PI);
-
-                        float px = (float)((i + squareWidth / 2.0f) / squareWidth);
-                        float py = (float)((j + squareWidth / 2.0f) / squareWidth);
-
-                        int r = (int)((pt / 2 + px / 2) * 255);
-                        int g = 255 - (int)((pt / 2 + px / 2) * 255);
-                        int b = 255 - (int)((pt / 2 + px / 2) * 255);
+                        int r = (int)(((float)(i + squareWidth / 2) / squareWidth) * 255);
+                        int g = 255 - (int)(((float)(j + squareWidth / 2) / squareWidth) * 255);
+                        int b = 255;
 
                         Color color = Color.FromArgb(r, g, b);
 
-                        _spriteBatch.DrawQuad(new Vector2(i, j), new Vector2(step - 3, step - 3), 0, color);
+                        _spriteBatch.DrawQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
                         quadCount++;
                     }
                 }
@@ -115,13 +118,12 @@ namespace CS_Jack
 
                 _spriteBatch.Begin(_uiCamera);
                 _spriteBatch.DrawString("FPS: " + MathF.Ceiling(1 / _deltaTime), new Vector2(-WindowSize.Width / 2 + 50, WindowSize.Height / 2 - 50), new Vector2(2), Color.White, _font);
+                _spriteBatch.DrawString("Quad Count: " + quadCount, new Vector2(-WindowSize.Width / 2 + 50, WindowSize.Height / 2 - 100), new Vector2(2), Color.White, _font);
                 _spriteBatch.End();
             }
 
             protected override void Exit()
             {
-                Console.WriteLine("hello");
-                Environment.Exit(0);
             }
         }
     }

@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace Jack.Graphics
 {
@@ -53,6 +52,8 @@ namespace Jack.Graphics
 
         public Texture(IntPtr data, int width, int height)
         {
+            Width = width;
+            Height = height;
             Load(data, width, height);
         }
 
