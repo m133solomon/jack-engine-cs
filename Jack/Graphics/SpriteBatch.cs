@@ -12,6 +12,9 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Jack.Graphics
 {
+
+    // todo: ADD SOME FUCKING COMMENTS DOG
+
     public class SpriteBatch : IDisposable
     {
         private const int POSITION_SIZE = 2;
@@ -249,6 +252,7 @@ namespace Jack.Graphics
             DrawQuad(position, size, sourceRectangle, rotation, texture, color);
         }
 
+        // todo: add origin
         public void DrawQuad(Vector2 position, Vector2 size, Rectangle sourceRectangle, float rotation, Texture texture, Color color)
         {
             if (_quadCount >= _batchSize || _textures.Count >= TEXTURE_SLOTS_COUNT)
@@ -302,9 +306,10 @@ namespace Jack.Graphics
             _quadIbo.Dispose();
         }
 
+        // todo: fix this though
         private class TextBatch
         {
-            private int _glyphsPerLine = 16;
+            private int _glyphsPerLine = 18;
             private int _glyphLineCount = 16;
             private int _glyphWidth = 11;
             private int _glyphHeight = 20;
@@ -314,8 +319,7 @@ namespace Jack.Graphics
             private int _atlasOffsetY = -1;
             private int _fontSize = 14;
             private bool _bitmapFont = false;
-            private string _fontName = "Arial";
-            private string _fontBitmapFileName;
+            private string _fontName = "JetBrains Mono";
 
             private Texture _fontTexture;
             public Texture FontTexture => _fontTexture;
@@ -324,9 +328,8 @@ namespace Jack.Graphics
             public TextBatch(SpriteBatch spriteBatch)
             {
                 _spriteBatch = spriteBatch;
-                _fontBitmapFileName = _fontName + ".png";
-                GenerateFontImage();
-                _fontTexture = new Texture(_fontBitmapFileName);
+                MemoryStream textureStream = GenerateFontImage();
+                _fontTexture = new Texture(textureStream);
             }
 
             public void DrawText(Vector2 position, string text)
@@ -354,7 +357,7 @@ namespace Jack.Graphics
                 }
             }
 
-            private void GenerateFontImage()
+            private MemoryStream GenerateFontImage()
             {
                 int bitmapWidth = _glyphsPerLine * _glyphWidth;
                 int bitmapHeight = _glyphLineCount * _glyphHeight;
@@ -386,7 +389,9 @@ namespace Jack.Graphics
                             }
                         }
                     }
-                    bitmap.Save(_fontBitmapFileName);
+                    MemoryStream stream = new MemoryStream();
+                    bitmap.Save(stream, ImageFormat.Png);
+                    return stream;
                 }
             }
         }

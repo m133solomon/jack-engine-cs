@@ -12,8 +12,8 @@ namespace Jack.Graphics
     {
         private int _id;
         public int Id => _id;
-        
-        public System.Drawing.Size Size { get; }
+
+        public System.Drawing.Size Size { get; private set; }
 
         public Texture(string path)
         {
@@ -23,11 +23,23 @@ namespace Jack.Graphics
             }
 
             Image<Rgba32> image = (Image<Rgba32>)Image.Load(path);
+
+            MakeTexture(image);
+        }
+
+        public Texture(MemoryStream stream)
+        {
+            Image<Rgba32> image = (Image<Rgba32>)Image.Load(stream.ToArray());
+            MakeTexture(image);
+        }
+
+        private void MakeTexture(Image<Rgba32> image)
+        {
             // note: this apply this based on ortho projection
             // image.Mutate(x => x.Flip(FlipMode.Vertical));
 
             Size = new System.Drawing.Size(image.Width, image.Height);
-            
+
             unsafe
             {
                 fixed (void* data = &MemoryMarshal.GetReference(image.GetPixelRowSpan(0)))
@@ -36,12 +48,12 @@ namespace Jack.Graphics
                 }
             }
         }
-        
+
         public Texture(IntPtr data, int width, int height)
         {
             Load(data, width, height);
         }
-        
+
         private void Load(IntPtr data, int width, int height)
         {
             _id = GL.GenTexture();
@@ -57,21 +69,21 @@ namespace Jack.Graphics
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            
+
             Unbind();
         }
-        
+
         public void Bind(TextureUnit slot = TextureUnit.Texture0)
         {
             GL.ActiveTexture(slot);
             GL.BindTexture(TextureTarget.Texture2D, _id);
         }
-        
+
         public void Unbind()
         {
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
-        
+
         public void Dispose()
         {
             GL.DeleteTexture(_id);
