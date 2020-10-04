@@ -37,7 +37,7 @@ namespace Jack
                 }
             }
         }
-        
+
         private VSyncMode _windowVsync;
         public VSyncMode WindowVsync
         {
@@ -51,7 +51,7 @@ namespace Jack
                 }
             }
         }
-        
+
         private Color _clearColor;
         public Color ClearColor
         {
@@ -98,7 +98,7 @@ namespace Jack
             _window.Resize += new EventHandler<EventArgs>(OnResize);
             _window.Run();
         }
-        
+
         private void OnResize(object sender, EventArgs e)
         {
             _windowSize = new Size(_window.Width, _window.Height);
@@ -110,7 +110,7 @@ namespace Jack
 
         private void OnLoad(object sender, EventArgs e)
         {
-            
+
             GL.ClearColor(_clearColor);
             Load();
         }

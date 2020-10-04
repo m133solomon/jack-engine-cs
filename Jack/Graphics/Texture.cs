@@ -13,7 +13,8 @@ namespace Jack.Graphics
         private int _id;
         public int Id => _id;
 
-        public System.Drawing.Size Size { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public Texture(string path)
         {
@@ -38,7 +39,8 @@ namespace Jack.Graphics
             // note: this apply this based on ortho projection
             // image.Mutate(x => x.Flip(FlipMode.Vertical));
 
-            Size = new System.Drawing.Size(image.Width, image.Height);
+            Width = image.Width;
+            Height = image.Height;
 
             unsafe
             {
