@@ -15,7 +15,7 @@ namespace Jack.Graphics
         private const int COLOR_SIZE = 4;
         private const int TEX_COORDS_SIZE = 2;
         private const int TEX_INDEX_SIZE = 1;
-        // todo: maybe fond a way and make this dynamic
+        // todo: maybe find a way and make this dynamic
         private const int TEXTURE_SLOTS_COUNT = 8;
 
         private static readonly float[] _quadVertices =
@@ -96,11 +96,13 @@ namespace Jack.Graphics
             // the amount of quads times the size of a vertex times 4 vertices per quad
             _indices = GenerateIndices(batchSize);
 
+            // make a dynamic vbo and set it's data to null
             _quadVbo = new BufferObject<float>(_vertices, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw);
             GL.BufferData(BufferTarget.ArrayBuffer, VerticesAmount * sizeof(float), IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
             _quadIbo = new BufferObject<int>(_indices, BufferTarget.ElementArrayBuffer);
 
+            // add descriptions for the vertices inside the vao
             _quadVao = new VertexArrayObject<float, int>(_quadVbo, _quadIbo);
             _quadVao.VertexAttribPointer(0, POSITION_SIZE, VertexAttribPointerType.Float, VertexSize, 0);
             _quadVao.VertexAttribPointer(1, COLOR_SIZE, VertexAttribPointerType.Float, VertexSize, POSITION_SIZE);
@@ -112,6 +114,10 @@ namespace Jack.Graphics
 
         private int[] GenerateIndices(int quadsAmount)
         {
+            // the indices in order to draw a quad are { 0, 1, 2, 2, 3, 0}
+            // (2 trangles)
+            // fill the entire ibo with this
+
             int[] indices = new int[quadsAmount * 6];
 
             int offset = 0;
@@ -135,6 +141,7 @@ namespace Jack.Graphics
         private Camera _camera;
         public void Begin(Camera camera)
         {
+            // only allow for begin to be called once
             if (_beginCalled)
             {
                 throw new Exception("Begin was already called once");
@@ -142,37 +149,46 @@ namespace Jack.Graphics
             _beginCalled = true;
             _camera = camera;
 
+            // every time we have a new draw call we need to reset the vertices and the textures
             _vertices = new float[VerticesAmount];
             _textures = new List<Texture>(TEXTURE_SLOTS_COUNT);
 
+            // set the world matrix inside the shader
+            // note: i can also send proj matrix and view matrix and 
+            // have them multiplied on the gpu
             Matrix4 viewProj = camera.ProjectionMatrix * camera.ViewMatrix;
 
-            _quadShader.SetUniform("u_Textures", _textureSlots);
             _quadShader.Bind();
+            _quadShader.SetUniform("u_Textures", _textureSlots);
             _quadShader.SetUniform("u_MVP", viewProj);
         }
 
         public void End()
         {
+            // dont allow for end to be called twice
             if (!_beginCalled)
             {
                 throw new Exception("Cannot call end before calling begin");
             }
             _beginCalled = false;
 
+            // on end we have to bind all the data to the vbo
             _quadVbo.Bind();
             int size = _quadCount * 4 * VertexSize * sizeof(float);
             GL.BufferSubData<float>(BufferTarget.ArrayBuffer, IntPtr.Zero, size, _vertices);
 
+            // also bind every texture
             for (int i = 0; i < _textures.Count; i++)
             {
                 _textures[i].Bind(TextureUnit.Texture0 + i + 1);
             }
 
+            // and finally draw everything
             _quadVao.Bind();
             _quadShader.Bind();
             GL.DrawElements(BeginMode.Triangles, _quadCount * 6, DrawElementsType.UnsignedInt, 0);
 
+            // also reset the quadCount
             _quadCount = 0;
         }
 
@@ -181,8 +197,10 @@ namespace Jack.Graphics
             float rotation, float texIndex, int texWidth, int texHeight, Color color
         )
         {
-            int offset = _quadCount * 4 * VertexSize;
 
+            // add data to the vertex buffer
+
+            // calc transform for the quad
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(position.X, position.Y, 0.0f));
             Matrix4 scale = Matrix4.CreateScale(new Vector3(size.X, size.Y, 0.0f));
             Matrix4 rotationM = Matrix4.CreateRotationZ(rotation);
@@ -190,6 +208,7 @@ namespace Jack.Graphics
             Matrix4 transform = rotationM * scale * translation;
 
             // normalized sourceRectangle
+            // we need this to set the texture coords accordingly
             RectangleF nsrc = new RectangleF(
                 (float)sourceRectangle.X / (float)texWidth,
                 (float)sourceRectangle.Y / (float)texHeight,
@@ -205,8 +224,13 @@ namespace Jack.Graphics
                 new Vector2(nsrc.Left, nsrc.Top)
             };
 
+            // calculate where we are in the vertices array
+            int offset = _quadCount * 4 * VertexSize;
+
             for (int i = 0; i < 4; i++)
             {
+                // for every vertex we have to calculate it's position inside the world matrix
+                // i don't know why the last paramter needs to be 1 but it won't work w/out it
                 Vector4 vertexPosition = new Vector4(_quadVertices[i * 2], _quadVertices[i * 2 + 1], 0.0f, 1.0f);
                 vertexPosition *= transform;
 
@@ -220,6 +244,7 @@ namespace Jack.Graphics
                 _vertices[offset + 4] = color.B / 255.0f;
                 _vertices[offset + 5] = color.A / 255.0f;
 
+                // set the tex coords
                 _vertices[offset + 6] = texCoords[i].X;
                 _vertices[offset + 7] = texCoords[i].Y;
 
@@ -230,14 +255,20 @@ namespace Jack.Graphics
             }
         }
 
-        public void DrawQuad(Vector2 position, Vector2 size, float rotation, Texture texture, Color color)
+        public void FillQuad(Vector2 position, Vector2 size, float rotation, Color color)
         {
-            Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
-            DrawQuad(position, size, sourceRectangle, rotation, texture, color);
+            if (_quadCount >= _batchSize)
+            {
+                End();
+                Begin(_camera);
+            }
+            SetVertexData(position, size, new Rectangle(0, 0, 1, 1), rotation, 0.0f, 1, 1, color);
+            _quadCount++;
         }
 
-        // todo: add origin
-        public void DrawQuad(Vector2 position, Vector2 size, Rectangle sourceRectangle, float rotation, Texture texture, Color color)
+        // note: add origin to all of these
+
+        public void Draw(Texture texture, Vector2 position, Vector2 size, float rotation, Rectangle sourceRectangle, Color color)
         {
             if (_quadCount >= _batchSize || _textures.Count >= TEXTURE_SLOTS_COUNT)
             {
@@ -249,6 +280,41 @@ namespace Jack.Graphics
             SetVertexData(position, size, sourceRectangle, rotation, textureIndex, texture.Width, texture.Height, color);
 
             _quadCount++;
+        }
+
+        public void Draw(Texture texture, Vector2 position, Vector2 size, float rotation, Color color)
+        {
+            Draw(texture, position, size, rotation, texture.Rectangle, color);
+        }
+
+        public void Draw(Texture texture, Vector2 position, Vector2 size, Rectangle sourceRectangle)
+        {
+            Draw(texture, position, size, 0, sourceRectangle, Color.White);
+        }
+
+        public void Draw(Texture texture, Vector2 position, Vector2 size)
+        {
+            Draw(texture, position, size, 0, Color.White);
+        }
+
+        public void Draw(Texture texture, Rectangle destinationRectangle, float rotation, Rectangle sourceRectangle, Color color)
+        {
+            Vector2 position = new Vector2(
+                destinationRectangle.X + destinationRectangle.Width / 2,
+                destinationRectangle.Y + destinationRectangle.Height / 2
+            );
+            Vector2 size = new Vector2(destinationRectangle.Width, destinationRectangle.Height);
+            Draw(texture, position, size, rotation, sourceRectangle, color);
+        }
+
+        public void Draw(Texture texture, Rectangle destinationRectangle, float rotation, Color color)
+        {
+            Draw(texture, destinationRectangle, 0, texture.Rectangle, color);
+        }
+
+        public void Draw(Texture texture, Rectangle destinationRectangle)
+        {
+            Draw(texture, destinationRectangle, 0, Color.White);
         }
 
         private int CheckTextureIndex(Texture texture)
@@ -271,19 +337,10 @@ namespace Jack.Graphics
             return textureIndex;
         }
 
-        public void DrawQuad(Vector2 position, Vector2 size, float rotation, Color color)
-        {
-            if (_quadCount >= _batchSize)
-            {
-                End();
-                Begin(_camera);
-            }
-            SetVertexData(position, size, new Rectangle(0, 0, 1, 1), rotation, 0.0f, 1, 1, color);
-            _quadCount++;
-        }
-
         public void DrawString(string text, Vector2 position, Vector2 scale, Color color, SpriteFont font)
         {
+            Draw(font.FontTexture, new Rectangle(300, 300, 700, 700));
+
             float xStep = (float)(font.GlyphWidth + font.FontSize) / (float)(font.FontTexture.Width);
             float yStep = (float)(font.GlyphHeight + font.FontSize) / (float)(font.FontTexture.Height);
 
@@ -295,14 +352,18 @@ namespace Jack.Graphics
                 float cx = (float)(c % font.GlyphsPerLine) * xStep;
                 float cy = (float)(c / font.GlyphsPerLine) * yStep;
 
-                Rectangle srcRect = new Rectangle(
-                    (int)(cx * font.FontTexture.Width),
-                    (int)(cy * font.FontTexture.Height),
-                    (int)(xStep * font.FontTexture.Width),
-                    (int)(yStep * font.FontTexture.Height)
-                );
+                int charX = (int)(cx * font.FontTexture.Width);
+                // note: it needs to be that weird because, the texture has to be somehwat flipped
+                // i dont know, projection matrix, img.Mutate(x => x.flip vertical) check camera and texture
+                int charY = (int)(font.FontTexture.Height - (cy * font.FontTexture.Height) - (yStep * font.FontTexture.Height));
+                int charWidth = (int)(xStep * font.FontTexture.Width);
+                int charHeight = (int)(yStep * font.FontTexture.Height);
 
-                DrawQuad(new Vector2(x, position.Y), new Vector2(font.GlyphWidth * scale.X, font.GlyphHeight * scale.Y), srcRect, 0, font.FontTexture, color);
+                Rectangle srcRect = new Rectangle(charX, charY, charWidth, charHeight);
+                Vector2 pos = new Vector2(x, position.Y);
+                Vector2 size = new Vector2(font.GlyphWidth * scale.X, font.GlyphHeight * scale.Y);
+
+                Draw(font.FontTexture, pos, size, 0, srcRect, color);
 
                 x += (scale.X * font.CharSpacing);
             }

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace Jack.Graphics
 {
@@ -14,6 +15,8 @@ namespace Jack.Graphics
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+
+        public System.Drawing.Rectangle Rectangle => new System.Drawing.Rectangle(0, 0, Width, Height);
 
         public Texture(string path)
         {
@@ -36,7 +39,7 @@ namespace Jack.Graphics
         private void MakeTexture(Image<Rgba32> image)
         {
             // note: this apply this based on ortho projection
-            // image.Mutate(x => x.Flip(FlipMode.Vertical));
+            image.Mutate(x => x.Flip(FlipMode.Vertical));
 
             Width = image.Width;
             Height = image.Height;

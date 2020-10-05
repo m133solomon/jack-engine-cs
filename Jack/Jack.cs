@@ -4,6 +4,11 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
+// todo: fullscreen support
+// todo: some audio work
+// todo: input work
+// todo: the node system
+
 namespace Jack
 {
     public abstract class JackApp : IDisposable
@@ -122,6 +127,7 @@ namespace Jack
 
         private void OnUnload(object sender, EventArgs e)
         {
+            Exit();
             if (OnExit != null)
             {
                 OnExit();

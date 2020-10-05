@@ -8,6 +8,7 @@ namespace Jack.Graphics
     public class RenderTarget : IDisposable
     {
         // todo: still need to figure out how to use this
+        // note: fuck frambuffers
         private int _id;
         public Texture Texture { get; }
 
@@ -21,8 +22,10 @@ namespace Jack.Graphics
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, Texture.Id, 0);
 
-            FramebufferErrorCode fec = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            DrawBuffersEnum[] bufs = new DrawBuffersEnum[] { (DrawBuffersEnum)FramebufferAttachment.ColorAttachment0 };
+            GL.DrawBuffers(bufs.Length, bufs);
 
+            FramebufferErrorCode fec = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
             if (fec != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception("Framebuffer not complete");

@@ -35,8 +35,6 @@ namespace CS_Jack
 
             SpriteFont _font;
 
-            RenderTarget _renderTarget;
-
             protected override void Load()
             {
                 _spriteBatch = new SpriteBatch(this);
@@ -46,8 +44,6 @@ namespace CS_Jack
                 _texture2 = new Texture("res/glazing_1.png");
 
                 _font = new SpriteFont("Consolas", 37);
-
-                _renderTarget = new RenderTarget(100, 100);
             }
 
             private void MoveCamera()
@@ -93,32 +89,32 @@ namespace CS_Jack
             {
                 Clear(Color.FromArgb(20, 20, 20));
 
-                int squareWidth = 5000;
+                int squareWidth = 1000;
                 int step = 30;
                 int quadCount = 0;
 
                 _spriteBatch.Begin(_camera);
 
-                for (int i = -squareWidth / 2; i < squareWidth / 2; i += step)
-                {
-                    for (int j = -squareWidth / 2; j < squareWidth / 2; j += step)
-                    {
-                        int r = (int)(((float)(i + squareWidth / 2) / squareWidth) * 255);
-                        int g = 255 - (int)(((float)(j + squareWidth / 2) / squareWidth) * 255);
-                        int b = 255;
+                // _spriteBatch.Draw(_texture, new Rectangle(0, 0, 100, 100));
 
-                        Color color = Color.FromArgb(r, g, b);
-
-                        _spriteBatch.DrawQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
-                        quadCount++;
-                    }
-                }
+                // for (int i = 0; i < squareWidth; i += step)
+                // {
+                // for (int j = 0; j < squareWidth; j += step)
+                // {
+                // int r = (int)(((float)i / (float)squareWidth) * 255);
+                // int g = 255 - (int)(((float)j / (float)squareWidth) * 255);
+                // int b = 255;
+                // Color color = Color.FromArgb(r, g, b);
+                // _spriteBatch.FillQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
+                // quadCount++;
+                // }
+                // }
 
                 _spriteBatch.End();
 
                 _spriteBatch.Begin(_uiCamera);
-                _spriteBatch.DrawString("FPS: " + MathF.Ceiling(1 / _deltaTime), new Vector2(-WindowSize.Width / 2 + 50, WindowSize.Height / 2 - 50), new Vector2(2), Color.White, _font);
-                _spriteBatch.DrawString("Quad Count: " + quadCount, new Vector2(-WindowSize.Width / 2 + 50, WindowSize.Height / 2 - 100), new Vector2(2), Color.White, _font);
+                _spriteBatch.DrawString("FPS: " + MathF.Ceiling(1 / _deltaTime), new Vector2(50, 50), new Vector2(2), Color.White, _font);
+                _spriteBatch.DrawString("Quad Count: " + quadCount, new Vector2(50, 100), new Vector2(2), Color.White, _font);
                 _spriteBatch.End();
             }
 
