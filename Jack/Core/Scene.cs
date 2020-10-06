@@ -1,13 +1,18 @@
 using System.Collections.Generic;
+using Jack.Graphics;
 
 namespace Jack.Core
 {
     public class Scene
     {
+        public Camera Camera { get; set; }
         public List<Node> Children { get; }
 
-        public Scene()
+        public JackApp App { get; }
+
+        public Scene(JackApp app)
         {
+            App = app;
             Children = new List<Node>();
         }
 
@@ -28,19 +33,9 @@ namespace Jack.Core
             }
         }
 
-        protected virtual void OnEnter() { }
-        protected virtual void OnExit() { }
-
-        protected virtual void Load() { }
-
-        protected virtual void Update(float deltaTime)
-        {
-
-        }
-
-        protected virtual void Draw()
-        {
-
-        }
+        public virtual void OnEnter() { }
+        public virtual void OnExit() { }
+        public virtual void Update(float deltaTime) { }
+        public virtual void Draw() { }
     }
 }

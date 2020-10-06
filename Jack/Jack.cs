@@ -4,6 +4,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
+using Jack.Graphics;
+
 // todo: fullscreen support
 // todo: some audio work
 // todo: input work
@@ -65,6 +67,8 @@ namespace Jack
         public event JackEventHandler OnExit;
         public event JackEventHandler OnWindowResize;
 
+        public SpriteBatch SpriteBatch { get; private set; }
+
         public JackApp()
         {
             _windowSize = new Size(800, 600);
@@ -103,6 +107,8 @@ namespace Jack
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
+
+            SpriteBatch = new SpriteBatch(this);
 
             Load();
         }

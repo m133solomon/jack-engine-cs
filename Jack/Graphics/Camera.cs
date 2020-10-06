@@ -32,6 +32,9 @@ namespace Jack.Graphics
             }
         }
 
+        // todo: add rotation
+        private float _rotation;
+
         private Size _size;
         public Rectangle Bounds =>
             new Rectangle((int)(_position.X - _size.Width / 2), (int)(_position.Y - _size.Height / 2), _size.Width, _size.Height);
