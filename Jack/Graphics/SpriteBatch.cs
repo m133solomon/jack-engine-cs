@@ -205,7 +205,7 @@ namespace Jack.Graphics
             Matrix4 scale = Matrix4.CreateScale(new Vector3(size.X, size.Y, 0.0f));
             Matrix4 rotationM = Matrix4.CreateRotationZ(rotation);
 
-            Matrix4 transform = rotationM * scale * translation;
+            Matrix4 transform = scale * rotationM * translation;
 
             // normalized sourceRectangle
             // we need this to set the texture coords accordingly
@@ -266,6 +266,16 @@ namespace Jack.Graphics
             _quadCount++;
         }
 
+        public void FillQuad(Rectangle rectangle, float rotation, Color color)
+        {
+            Vector2 position = new Vector2(
+                rectangle.X + rectangle.Width / 2,
+                rectangle.Y + rectangle.Height / 2
+            );
+            Vector2 size = new Vector2(rectangle.Width, rectangle.Height);
+            FillQuad(position, size, rotation, color);
+        }
+
         // note: add origin to all of these
 
         public void Draw(Texture texture, Vector2 position, Vector2 size, float rotation, Rectangle sourceRectangle, Color color)
@@ -317,6 +327,15 @@ namespace Jack.Graphics
             Draw(texture, destinationRectangle, 0, Color.White);
         }
 
+        public void DrawLine(Vector2 a, Vector2 b, int thickness, Color color)
+        {
+            Vector2 edge = a - b;
+            float rotation = (float)Math.Atan2(edge.X, edge.Y);
+            Vector2 middle = new Vector2((a.X + b.X) / 2, (a.Y + b.Y) / 2);
+
+            FillQuad(middle, new Vector2(edge.Length, 10), rotation, color);
+        }
+
         private int CheckTextureIndex(Texture texture)
         {
             int textureIndex = 0;
@@ -339,8 +358,6 @@ namespace Jack.Graphics
 
         public void DrawString(string text, Vector2 position, Vector2 scale, Color color, SpriteFont font)
         {
-            Draw(font.FontTexture, new Rectangle(300, 300, 700, 700));
-
             float xStep = (float)(font.GlyphWidth + font.FontSize) / (float)(font.FontTexture.Width);
             float yStep = (float)(font.GlyphHeight + font.FontSize) / (float)(font.FontTexture.Height);
 

@@ -9,6 +9,7 @@ namespace Jack
         public Matrix4 ProjectionMatrix { get; set; }
         public Matrix4 ViewMatrix { get; set; }
 
+        // note: i think this is broken
         private Vector2 _position;
         public Vector2 Position
         {
@@ -62,14 +63,14 @@ namespace Jack
             UpdateProjectionMatrix(_size.Width, _size.Height);
         }
 
-        public void TranslateMatrix(Vector2 amount)
+        private void TranslateMatrix(Vector2 amount)
         {
             _position += amount;
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(amount.X, amount.Y, 0.0f));
             ViewMatrix *= translation;
         }
 
-        public void ScaleMatrix(Vector2 amount)
+        private void ScaleMatrix(Vector2 amount)
         {
             _scale *= amount;
             Matrix4 scale = Matrix4.CreateScale(new Vector3(amount.X, amount.Y, 0.0f));

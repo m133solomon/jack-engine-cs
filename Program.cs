@@ -90,25 +90,25 @@ namespace CS_Jack
                 Clear(Color.FromArgb(20, 20, 20));
 
                 int squareWidth = 1000;
-                int step = 30;
+                int step = 50;
                 int quadCount = 0;
 
                 _spriteBatch.Begin(_camera);
 
-                // _spriteBatch.Draw(_texture, new Rectangle(0, 0, 100, 100));
+                for (int i = 0; i < squareWidth; i += step)
+                {
+                    for (int j = 0; j < squareWidth; j += step)
+                    {
+                        int r = (int)(((float)i / (float)squareWidth) * 255);
+                        int g = 255 - (int)(((float)j / (float)squareWidth) * 255);
+                        int b = 255;
+                        Color color = Color.FromArgb(r, g, b);
+                        _spriteBatch.FillQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
+                        quadCount++;
+                    }
+                }
 
-                // for (int i = 0; i < squareWidth; i += step)
-                // {
-                // for (int j = 0; j < squareWidth; j += step)
-                // {
-                // int r = (int)(((float)i / (float)squareWidth) * 255);
-                // int g = 255 - (int)(((float)j / (float)squareWidth) * 255);
-                // int b = 255;
-                // Color color = Color.FromArgb(r, g, b);
-                // _spriteBatch.FillQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
-                // quadCount++;
-                // }
-                // }
+                _spriteBatch.DrawLine(new Vector2(300, 300), new Vector2(700, 700), 10, Color.Purple);
 
                 _spriteBatch.End();
 
