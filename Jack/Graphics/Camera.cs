@@ -2,7 +2,7 @@ using OpenTK;
 using Jack.Graphics;
 using System.Drawing;
 
-namespace Jack
+namespace Jack.Graphics
 {
     public class Camera
     {

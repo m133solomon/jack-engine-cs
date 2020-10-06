@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using Jack;
-using Jack.Graphics;
 using OpenTK;
 using OpenTK.Input;
+
+using Jack;
+using Jack.Graphics;
+using Jack.Core;
 
 namespace CS_Jack
 {
@@ -43,7 +45,8 @@ namespace CS_Jack
                 _texture = new Texture("res/avatar.png");
                 _texture2 = new Texture("res/glazing_1.png");
 
-                _font = new SpriteFont("Consolas", 37);
+                _font = new SpriteFont("Courier", 37);
+                _font.CharSpacing = (int)(_font.FontSize * 0.25f);
             }
 
             private void MoveCamera()
