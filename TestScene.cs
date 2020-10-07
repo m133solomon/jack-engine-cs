@@ -7,6 +7,37 @@ using System.Drawing;
 
 namespace Jack
 {
+    public class QuadNode : Node, IUpdateable, IDrawable
+    {
+        private float _dir;
+        private float _rotation = 0;
+        private float _speed;
+        private SpriteBatch _sb;
+        private Vector2 _position;
+        private Vector2 _size;
+        private Color _color;
+
+        public QuadNode(Vector2 position, Vector2 size, Color color, int dir, float speed, SpriteBatch sb)
+        {
+            _position = position;
+            _size = size;
+            _color = color;
+            _dir = dir;
+            _speed = speed;
+            _sb = sb;
+        }
+
+        public void Update(float deltaTime)
+        {
+            _rotation += _dir * _speed * deltaTime;
+        }
+
+        public void Draw()
+        {
+            _sb.FillQuad(_position, _size, _rotation, _color);
+        }
+    }
+
     public class TestScene : Scene
     {
         Camera _camera;
@@ -15,23 +46,43 @@ namespace Jack
         {
             _camera = new Camera(app, app.WindowSize.Width, app.WindowSize.Height);
 
-            Root.AddChild(new Node("test_1"));
-            Root.Children[0].AddChild(new Node("test_1_child_1"));
-            Root.Children[0].AddChild(new Node("test_1_child_2"));
-            Root.Children[0].Children[1].AddChild(new Node("test_1_child_2_child_1"));
+            Root.AddChild(new QuadNode(
+                new Vector2(App.WindowSize.Width / 2 - 300, App.WindowSize.Height / 2),
+                new Vector2(120), Color.Cyan, 1, 1.0f, App.SpriteBatch
+            )
+            { Name = "quad_1" });
 
-            Root.AddChild(new Node("test_2"));
+            Root.AddChild(new QuadNode(
+                new Vector2(App.WindowSize.Width / 2 + 300, App.WindowSize.Height / 2),
+                new Vector2(120), Color.DeepPink, -1, 1.0f, App.SpriteBatch
+            )
+            { Name = "quad_2" });
 
-            Root.AddChild(new Node("test_3"));
-            Root.Children[2].AddChild(new Node("test_3_child_1"));
+            Root.AddChild(new QuadNode(
+                new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
+                new Vector2(200), Color.BlueViolet, -1, 1.0f, App.SpriteBatch
+            )
+            { Name = "quad_3" });
+
+            Root.AddChild(new QuadNode(
+                new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
+                new Vector2(40), Color.White, 1, 1.0f, App.SpriteBatch
+            )
+            { Name = "quad_4" });
         }
 
-        private float _quadRot = 0;
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
-            _quadRot += 0.5f * deltaTime;
             MoveCamera();
+
+            foreach (Node node in Root.Children)
+            {
+                if (node is IUpdateable updateable)
+                {
+                    updateable.Update(deltaTime);
+                }
+            }
         }
 
         public override void Draw()
@@ -41,8 +92,13 @@ namespace Jack
             App.Clear(Color.FromArgb(20, 20, 20));
 
             App.SpriteBatch.Begin(_camera);
-            App.SpriteBatch.FillQuad(new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2), new Vector2(250), _quadRot, Color.MediumPurple);
-            App.SpriteBatch.FillQuad(new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2), new Vector2(50), -_quadRot, Color.LightPink);
+            foreach (Node node in Root.Children)
+            {
+                if (node is IDrawable drawable)
+                {
+                    drawable.Draw();
+                }
+            }
             App.SpriteBatch.End();
         }
 
@@ -73,15 +129,6 @@ namespace Jack
             else if (state.IsKeyDown(Key.E))
             {
                 _camera.Scale *= 0.99f;
-            }
-
-            if (state.IsKeyDown(Key.H))
-            {
-                _camera.Rotation += 0.1f;
-            }
-            else if (state.IsKeyDown(Key.G))
-            {
-                _camera.Rotation -= 0.1f;
             }
         }
     }

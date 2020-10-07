@@ -333,7 +333,27 @@ namespace Jack.Graphics
             float rotation = (float)Math.Atan2(edge.X, edge.Y);
             Vector2 middle = new Vector2((a.X + b.X) / 2, (a.Y + b.Y) / 2);
 
-            FillQuad(middle, new Vector2(edge.Length, 10), rotation, color);
+            FillQuad(middle, new Vector2(thickness, edge.Length), rotation, color);
+        }
+
+        public void StrokeRect(Rectangle rectangle, int thickness, Color color)
+        {
+            DrawLine(
+                new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Top),
+                thickness, color
+            );
+            DrawLine(
+                new Vector2(rectangle.Right, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom),
+                thickness, color
+            );
+            DrawLine(
+                new Vector2(rectangle.Right, rectangle.Bottom), new Vector2(rectangle.Left, rectangle.Bottom),
+                thickness, color
+            );
+            DrawLine(
+                new Vector2(rectangle.Left, rectangle.Bottom), new Vector2(rectangle.Left, rectangle.Top),
+                thickness, color
+            );
         }
 
         private int CheckTextureIndex(Texture texture)

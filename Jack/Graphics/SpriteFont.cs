@@ -9,6 +9,7 @@ namespace Jack.Graphics
 {
     public class SpriteFont : IDisposable
     {
+        // todo: find a way to set this dynamically
         public int GlyphWidth => 11;
         public int GlyphHeight => 22;
 
