@@ -5,32 +5,16 @@ namespace Jack.Core
 {
     public class Scene
     {
-        public Camera Camera { get; set; }
-        public List<Node> Children { get; }
+        public Node Root { get; private set; }
 
-        public JackApp App { get; }
+        public JackApp App { get; set; }
+
+        public string Name { get; set; } = "New Scene";
 
         public Scene(JackApp app)
         {
             App = app;
-            Children = new List<Node>();
-        }
-
-        public void AddChild(Node node)
-        {
-            Children.Add(node);
-        }
-
-        public void RemoveChild(Node node)
-        {
-            for (int i = 0; i < Children.Count; i++)
-            {
-                if (node.Id == Children[i].Id)
-                {
-                    Children.RemoveAt(i);
-                    break;
-                }
-            }
+            Root = new Node("Scene Root");
         }
 
         public virtual void OnEnter() { }

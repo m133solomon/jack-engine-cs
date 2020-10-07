@@ -1,10 +1,13 @@
 using System;
 using System.Drawing;
+using System.Collections.Generic;
+
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
 using Jack.Graphics;
+using Jack.Core;
 
 // todo: fullscreen support
 // todo: some audio work
@@ -69,6 +72,8 @@ namespace Jack
 
         public SpriteBatch SpriteBatch { get; private set; }
 
+        public Scene CurrentScene { get; set; }
+
         public JackApp()
         {
             _windowSize = new Size(800, 600);
@@ -113,19 +118,29 @@ namespace Jack
             Load();
         }
 
-        private void OnUpdateFrame(object sender, FrameEventArgs e)
-        {
-            Update((float)e.Time);
-        }
-
         public void Clear(Color color)
         {
             GL.ClearColor(color);
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
+        private void OnUpdateFrame(object sender, FrameEventArgs e)
+        {
+            Update((float)e.Time);
+
+            if (CurrentScene != null)
+            {
+                CurrentScene.Update((float)e.Time);
+            }
+        }
+
         private void OnRenderFrame(object sender, FrameEventArgs e)
         {
+            if (CurrentScene != null)
+            {
+                CurrentScene.Draw();
+            }
+
             Draw();
 
             _window.SwapBuffers();

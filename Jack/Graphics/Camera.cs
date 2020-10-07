@@ -32,8 +32,17 @@ namespace Jack.Graphics
             }
         }
 
-        // todo: add rotation
+        // todo: fix this shit
         private float _rotation;
+        public float Rotation
+        {
+            get => _rotation;
+            set
+            {
+                RotateMatrix(value - _rotation);
+                _rotation = value;
+            }
+        }
 
         private Size _size;
         public Rectangle Bounds =>
@@ -79,9 +88,17 @@ namespace Jack.Graphics
             Matrix4 scale = Matrix4.CreateScale(new Vector3(amount.X, amount.Y, 0.0f));
             ViewMatrix *= scale;
         }
-        public void ScaleMatrix(float amount)
+
+        private void ScaleMatrix(float amount)
         {
-            ScaleMatrix(new Vector2(amount)); ;
+            ScaleMatrix(new Vector2(amount));
+        }
+
+        private void RotateMatrix(float amount)
+        {
+            _rotation += amount;
+            Matrix4 rotation = Matrix4.CreateRotationZ(amount);
+            ViewMatrix *= rotation;
         }
     }
 }

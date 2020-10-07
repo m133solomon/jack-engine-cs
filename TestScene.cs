@@ -10,14 +10,27 @@ namespace Jack
     public class TestScene : Scene
     {
         Camera _camera;
+
         public TestScene(JackApp app) : base(app)
         {
             _camera = new Camera(app, app.WindowSize.Width, app.WindowSize.Height);
+
+            Root.AddChild(new Node("test_1"));
+            Root.Children[0].AddChild(new Node("test_1_child_1"));
+            Root.Children[0].AddChild(new Node("test_1_child_2"));
+            Root.Children[0].Children[1].AddChild(new Node("test_1_child_2_child_1"));
+
+            Root.AddChild(new Node("test_2"));
+
+            Root.AddChild(new Node("test_3"));
+            Root.Children[2].AddChild(new Node("test_3_child_1"));
         }
 
+        private float _quadRot = 0;
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
+            _quadRot += 0.5f * deltaTime;
             MoveCamera();
         }
 
@@ -25,27 +38,11 @@ namespace Jack
         {
             base.Draw();
 
-            int squareWidth = 1000;
-            int step = 50;
-            int quadCount = 0;
+            App.Clear(Color.FromArgb(20, 20, 20));
 
             App.SpriteBatch.Begin(_camera);
-
-            for (int i = 0; i < squareWidth; i += step)
-            {
-                for (int j = 0; j < squareWidth; j += step)
-                {
-                    int r = (int)(((float)i / (float)squareWidth) * 255);
-                    int g = 255 - (int)(((float)j / (float)squareWidth) * 255);
-                    int b = 255;
-                    Color color = Color.FromArgb(r, g, b);
-                    App.SpriteBatch.FillQuad(new Vector2(i, j), new Vector2(step, step), 0, color);
-                    quadCount++;
-                }
-            }
-
-            App.SpriteBatch.DrawLine(new Vector2(300, 300), new Vector2(700, 700), 10, Color.Purple);
-
+            App.SpriteBatch.FillQuad(new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2), new Vector2(250), _quadRot, Color.MediumPurple);
+            App.SpriteBatch.FillQuad(new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2), new Vector2(50), -_quadRot, Color.LightPink);
             App.SpriteBatch.End();
         }
 
@@ -76,6 +73,15 @@ namespace Jack
             else if (state.IsKeyDown(Key.E))
             {
                 _camera.Scale *= 0.99f;
+            }
+
+            if (state.IsKeyDown(Key.H))
+            {
+                _camera.Rotation += 0.1f;
+            }
+            else if (state.IsKeyDown(Key.G))
+            {
+                _camera.Rotation -= 0.1f;
             }
         }
     }
