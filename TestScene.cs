@@ -4,37 +4,34 @@ using Jack.Core;
 using OpenTK;
 using OpenTK.Input;
 using System.Drawing;
+using System;
 
 namespace Jack
 {
     public class QuadNode : Node, IUpdateable, IDrawable
     {
+        // todo: make spritebatch / app global
         private float _dir;
-        private float _rotation = 0;
         private float _speed;
-        private SpriteBatch _sb;
-        private Vector2 _position;
-        private Vector2 _size;
         private Color _color;
 
-        public QuadNode(Vector2 position, Vector2 size, Color color, int dir, float speed, SpriteBatch sb)
+        public QuadNode(Vector2 position, Vector2 size, Color color, int dir, float speed) : base()
         {
-            _position = position;
-            _size = size;
+            Transform.Position = position;
+            Transform.Scale = size;
             _color = color;
             _dir = dir;
             _speed = speed;
-            _sb = sb;
         }
 
         public void Update(float deltaTime)
         {
-            _rotation += _dir * _speed * deltaTime;
+            Transform.Rotation += _dir * _speed * deltaTime;
         }
 
-        public void Draw()
+        public void Draw(SpriteBatch spriteBatch)
         {
-            _sb.FillQuad(_position, _size, _rotation, _color);
+            spriteBatch.FillQuad(GlobalTransform.Position, GlobalTransform.Scale, GlobalTransform.Rotation, _color);
         }
     }
 
@@ -48,27 +45,32 @@ namespace Jack
 
             Root.AddChild(new QuadNode(
                 new Vector2(App.WindowSize.Width / 2 - 300, App.WindowSize.Height / 2),
-                new Vector2(120), Color.Cyan, 1, 1.0f, App.SpriteBatch
-            )
+                new Vector2(120), Color.Cyan, 1, 1.0f)
             { Name = "quad_1" });
 
             Root.AddChild(new QuadNode(
                 new Vector2(App.WindowSize.Width / 2 + 300, App.WindowSize.Height / 2),
-                new Vector2(120), Color.DeepPink, -1, 1.0f, App.SpriteBatch
+                new Vector2(120), Color.DeepPink, -1, 1.0f
             )
             { Name = "quad_2" });
 
             Root.AddChild(new QuadNode(
                 new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
-                new Vector2(200), Color.BlueViolet, -1, 1.0f, App.SpriteBatch
+                new Vector2(200), Color.BlueViolet, -1, 1.0f
             )
             { Name = "quad_3" });
 
             Root.AddChild(new QuadNode(
                 new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
-                new Vector2(40), Color.White, 1, 1.0f, App.SpriteBatch
+                new Vector2(40), Color.White, 1, 1.0f
             )
             { Name = "quad_4" });
+
+            // var props = Root.Children[0].GetType().GetProperties();
+            // foreach (var prop in props)
+            // {
+            // Console.WriteLine("{0}-{1}", prop.Name, prop.GetValue(Root.Children[0]));
+            // }
         }
 
         public override void Update(float deltaTime)
@@ -85,20 +87,19 @@ namespace Jack
             }
         }
 
-        public override void Draw()
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Draw();
-
             App.Clear(Color.FromArgb(20, 20, 20));
 
-            App.SpriteBatch.Begin(_camera);
+            spriteBatch.Begin(_camera);
             foreach (Node node in Root.Children)
             {
                 if (node is IDrawable drawable)
                 {
-                    drawable.Draw();
+                    drawable.Draw(spriteBatch);
                 }
             }
+
             App.SpriteBatch.End();
         }
 
@@ -107,19 +108,19 @@ namespace Jack
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Key.W))
             {
-                _camera.Position += new Vector2(0, -0.01f);
+                Root.Transform.Position += new Vector2(0, -5f);
             }
             if (state.IsKeyDown(Key.S))
             {
-                _camera.Position += new Vector2(0, 0.01f);
+                Root.Transform.Position += new Vector2(0, 5f);
             }
             if (state.IsKeyDown(Key.A))
             {
-                _camera.Position += new Vector2(0.01f, 0);
+                Root.Transform.Position += new Vector2(-5f, 0);
             }
             if (state.IsKeyDown(Key.D))
             {
-                _camera.Position += new Vector2(-0.01f, 0);
+                Root.Transform.Position += new Vector2(5f, 0);
             }
 
             if (state.IsKeyDown(Key.Q))

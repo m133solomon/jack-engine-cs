@@ -60,7 +60,7 @@ namespace Jack.Graphics
             UpdateProjectionMatrix(_size.Width, _size.Height);
 
             _app = app;
-            // _app.OnWindowResize += OnResize;
+            _app.OnWindowResize += OnResize;
         }
 
         private void UpdateProjectionMatrix(int width, int height)

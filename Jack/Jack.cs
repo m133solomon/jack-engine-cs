@@ -12,7 +12,6 @@ using Jack.Core;
 // todo: fullscreen support
 // todo: some audio work
 // todo: input work
-// todo: the node system
 
 namespace Jack
 {
@@ -138,7 +137,7 @@ namespace Jack
         {
             if (CurrentScene != null)
             {
-                CurrentScene.Draw();
+                CurrentScene.Draw(SpriteBatch);
             }
 
             Draw();

@@ -20,6 +20,6 @@ namespace Jack.Core
         public virtual void OnEnter() { }
         public virtual void OnExit() { }
         public virtual void Update(float deltaTime) { }
-        public virtual void Draw() { }
+        public virtual void Draw(SpriteBatch spriteBatch) { }
     }
 }

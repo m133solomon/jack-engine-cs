@@ -2,6 +2,6 @@ namespace Jack.Core
 {
     public interface IDrawable
     {
-        void Draw();
+        void Draw(Jack.Graphics.SpriteBatch spriteBatch);
     }
 }

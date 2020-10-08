@@ -24,6 +24,8 @@ namespace Jack.Graphics
 
         private bool _bitmapFont = false;
 
+        // todo: make a method to measure text
+
         // todo: make a constructor that loads font from file
         public SpriteFont(string fontName, int size)
         {

@@ -4,8 +4,36 @@ namespace Jack.Core
 {
     public class Transform
     {
-        public Vector2 Translation { get; set; } = Vector2.Zero;
-        public Vector2 Scale { get; set; } = Vector2.One;
-        public float Rotation { get; set; } = 0;
+        public Node Node { get; set; }
+
+        private Vector2 _position;
+        public Vector2 Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+            }
+        }
+
+        private Vector2 _scale;
+        public Vector2 Scale
+        {
+            get => _scale;
+            set
+            {
+                _scale = value;
+            }
+        }
+
+        private float _rotation;
+        public float Rotation
+        {
+            get => _rotation;
+            set
+            {
+                _rotation = value;
+            }
+        }
     }
 }
