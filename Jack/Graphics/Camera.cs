@@ -1,6 +1,7 @@
 using OpenTK;
 using Jack.Graphics;
 using System.Drawing;
+using System;
 
 namespace Jack.Graphics
 {
@@ -71,7 +72,7 @@ namespace Jack.Graphics
 
         private void OnResize()
         {
-            _size = _app.WindowSize;
+            _size = JackApp.WindowSize;
             UpdateProjectionMatrix(_size.Width, _size.Height);
         }
 
@@ -93,6 +94,8 @@ namespace Jack.Graphics
         {
             ScaleMatrix(new Vector2(amount));
         }
+
+        // todo: methdod to project point to world and back
 
         private void RotateMatrix(float amount)
         {

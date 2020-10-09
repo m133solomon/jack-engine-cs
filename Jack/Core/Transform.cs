@@ -35,5 +35,10 @@ namespace Jack.Core
                 _rotation = value;
             }
         }
+
+        public override string ToString()
+        {
+            return Position.ToString() + " " + Scale.ToString() + " " + Rotation.ToString();
+        }
     }
 }

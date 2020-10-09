@@ -19,7 +19,7 @@ namespace CS_Jack
             }
         }
 
-        public class Application : JackApp
+        public class Application : Jack.JackApp
         {
             public Application() : base()
             {
@@ -28,18 +28,10 @@ namespace CS_Jack
                 WindowVsync = VSyncMode.On;
             }
 
-            private Camera _uiCamera;
-
-            SpriteFont _font;
-
             Scene _testScene;
 
             protected override void Load()
             {
-                _uiCamera = new Camera(this, WindowSize.Width, WindowSize.Height);
-
-                _font = new SpriteFont("Menlo", 37);
-
                 _testScene = new TestScene(this);
                 CurrentScene = _testScene;
 

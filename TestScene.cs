@@ -41,27 +41,27 @@ namespace Jack
 
         public TestScene(JackApp app) : base(app)
         {
-            _camera = new Camera(app, app.WindowSize.Width, app.WindowSize.Height);
+            _camera = new Camera(app, JackApp.WindowSize.Width, JackApp.WindowSize.Height);
 
             Root.AddChild(new QuadNode(
-                new Vector2(App.WindowSize.Width / 2 - 300, App.WindowSize.Height / 2),
+                new Vector2(JackApp.WindowSize.Width / 2 - 300, JackApp.WindowSize.Height / 2),
                 new Vector2(120), Color.Cyan, 1, 1.0f)
             { Name = "quad_1" });
 
             Root.AddChild(new QuadNode(
-                new Vector2(App.WindowSize.Width / 2 + 300, App.WindowSize.Height / 2),
+                new Vector2(JackApp.WindowSize.Width / 2 + 300, JackApp.WindowSize.Height / 2),
                 new Vector2(120), Color.DeepPink, -1, 1.0f
             )
             { Name = "quad_2" });
 
             Root.AddChild(new QuadNode(
-                new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
+                new Vector2(JackApp.WindowSize.Width / 2, JackApp.WindowSize.Height / 2),
                 new Vector2(200), Color.BlueViolet, -1, 1.0f
             )
             { Name = "quad_3" });
 
             Root.AddChild(new QuadNode(
-                new Vector2(App.WindowSize.Width / 2, App.WindowSize.Height / 2),
+                new Vector2(JackApp.WindowSize.Width / 2, JackApp.WindowSize.Height / 2),
                 new Vector2(40), Color.White, 1, 1.0f
             )
             { Name = "quad_4" });

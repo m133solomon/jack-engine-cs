@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Input;
 
 using Jack.Graphics;
 using Jack.Core;
@@ -17,10 +18,10 @@ namespace Jack
 {
     public abstract class JackApp : IDisposable
     {
-        private GameWindow _window;
+        private static GameWindow _window;
 
-        private Size _windowSize;
-        public Size WindowSize
+        private static Size _windowSize;
+        public static Size WindowSize
         {
             get => _window.ClientSize;
             set
@@ -33,8 +34,8 @@ namespace Jack
             }
         }
 
-        private string _windowTitle;
-        public string WindowTitle
+        private static string _windowTitle;
+        public static string WindowTitle
         {
             get => _windowTitle;
             set
@@ -47,8 +48,8 @@ namespace Jack
             }
         }
 
-        private VSyncMode _windowVsync;
-        public VSyncMode WindowVsync
+        private static VSyncMode _windowVsync;
+        public static VSyncMode WindowVsync
         {
             get => _windowVsync;
             set
@@ -71,7 +72,10 @@ namespace Jack
 
         public SpriteBatch SpriteBatch { get; private set; }
 
-        public Scene CurrentScene { get; set; }
+        public static Scene CurrentScene { get; set; }
+
+        private static Vector2 _mousePosition = Vector2.Zero;
+        public static Vector2 MousePosition => _mousePosition;
 
         public JackApp()
         {
@@ -94,6 +98,7 @@ namespace Jack
             _window.RenderFrame += new EventHandler<FrameEventArgs>(OnRenderFrame);
             _window.Unload += new EventHandler<EventArgs>(OnUnload);
             _window.Resize += new EventHandler<EventArgs>(OnResize);
+            _window.MouseMove += new EventHandler<MouseMoveEventArgs>(OnMouseMove);
             _window.Run();
         }
 
@@ -104,6 +109,12 @@ namespace Jack
             {
                 OnWindowResize();
             }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            _mousePosition.X = e.X;
+            _mousePosition.Y = e.Y;
         }
 
         private void OnLoad(object sender, EventArgs e)
@@ -131,6 +142,7 @@ namespace Jack
             {
                 CurrentScene.Update((float)e.Time);
             }
+
         }
 
         private void OnRenderFrame(object sender, FrameEventArgs e)
