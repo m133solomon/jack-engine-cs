@@ -9,9 +9,10 @@ namespace Jack.Graphics
 {
     public class SpriteFont : IDisposable
     {
-        // todo: find a way to set this dynamically
-        public int GlyphWidth => 11;
-        public int GlyphHeight => 22;
+        // todo: find a way to oprimize bitmap size
+        // + general font spacing
+        public float GlyphWidth { get; private set; }
+        public float GlyphHeight { get; private set; }
 
         public int GlyphsPerLine => 16;
         public int GlyphLineCount => 16;
@@ -19,68 +20,80 @@ namespace Jack.Graphics
         public string FontName { get; }
         public int FontSize { get; }
         public int CharSpacing { get; set; }
+        public int TextureCharSpacing => 10;
 
         public Texture FontTexture { get; }
 
         private bool _bitmapFont = false;
-
-        // todo: make a method to measure text
 
         // todo: make a constructor that loads font from file
         public SpriteFont(string fontName, int size)
         {
             FontName = fontName;
             FontSize = size;
-            CharSpacing = (int)(FontSize * 0.2f);
 
             FontTexture = new Texture(MakeFontTexture());
         }
 
+        private System.Drawing.Graphics _graphics;
+        private Font _font;
+
         private MemoryStream MakeFontTexture()
         {
-            int bmpWidth = GlyphsPerLine * (GlyphWidth + FontSize);
-            int bmpHeight = GlyphLineCount * (GlyphHeight + FontSize);
+            _font = new Font(new FontFamily(FontName), FontSize);
+            // note: maybe I can find a way to eaily fit all chars on a smaller bitmap
+            int bmpWidth = (int)(GlyphsPerLine * (FontSize * 2f));
+            int bmpHeight = (int)(GlyphLineCount * (FontSize * 2f));
 
             using (Bitmap bmp = new Bitmap(bmpWidth, bmpHeight, PixelFormat.Format32bppArgb))
-            using (Font font = new Font(new FontFamily(FontName), FontSize))
-            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bmp))
             {
+                _graphics = System.Drawing.Graphics.FromImage(bmp);
                 if (_bitmapFont)
                 {
-                    graphics.SmoothingMode = SmoothingMode.None;
-                    graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixel;
+                    _graphics.SmoothingMode = SmoothingMode.None;
+                    _graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixel;
                 }
                 else
                 {
-                    graphics.SmoothingMode = SmoothingMode.HighQuality;
-                    graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    _graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    _graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
                 }
+
+                SizeF glyphSize = _graphics.MeasureString("A", _font);
+                // note: maybe find a better ratio for the spacing
+                CharSpacing = (int)(_graphics.MeasureString(" ", _font).Width * 0.6f);
+
+                GlyphWidth = glyphSize.Width;
+                GlyphHeight = glyphSize.Height;
 
                 for (int i = 0; i < GlyphLineCount; i++)
                 {
                     for (int j = 0; j < GlyphsPerLine; j++)
                     {
                         char c = (char)(j + i * GlyphsPerLine);
-                        graphics.DrawString(c.ToString(), font, Brushes.White, j * (GlyphWidth + FontSize), i * (GlyphHeight + FontSize));
+                        int x = (int)(j * (GlyphWidth + TextureCharSpacing));
+                        int y = (int)(i * (GlyphHeight + TextureCharSpacing));
+                        _graphics.DrawString(c.ToString(), _font, Brushes.White, x, y);
                     }
                 }
 
                 MemoryStream imageStream = new MemoryStream();
-
                 bmp.Save(imageStream, ImageFormat.Png);
-
                 return imageStream;
             }
         }
 
         public Rectangle GetBounds(string text)
         {
-            return new Rectangle(0, 0, GlyphWidth * text.Length, GlyphHeight);
+            SizeF textSize = _graphics.MeasureString(text, _font);
+            return new Rectangle(0, 0, (int)textSize.Width + CharSpacing * text.Length / 5, (int)textSize.Height);
         }
 
         public void Dispose()
         {
             FontTexture.Dispose();
+            _graphics.Dispose();
+            _font.Dispose();
         }
     }
 }

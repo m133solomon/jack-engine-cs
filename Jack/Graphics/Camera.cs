@@ -80,7 +80,8 @@ namespace Jack.Graphics
         private void TranslateMatrix(Vector2 amount)
         {
             _position += amount;
-            Matrix4 translation = Matrix4.CreateTranslation(new Vector3(amount.X, amount.Y, 0.0f));
+            // note: find out why I need that minus
+            Matrix4 translation = Matrix4.CreateTranslation(new Vector3(-amount.X, amount.Y, 0.0f));
             ViewMatrix *= translation;
         }
 

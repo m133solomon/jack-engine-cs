@@ -354,6 +354,12 @@ namespace Jack.Graphics
             );
         }
 
+        public void StrokeRect(Vector2 position, Vector2 size, int thickness, Color color)
+        {
+            Rectangle rectangle = new Rectangle((int)(position.X - size.X / 2), (int)(position.Y - size.Y / 2), (int)size.X, (int)size.Y);
+            StrokeRect(rectangle, thickness, color);
+        }
+
         private int CheckTextureIndex(Texture texture)
         {
             int textureIndex = 0;
@@ -376,8 +382,8 @@ namespace Jack.Graphics
 
         public void DrawString(string text, Vector2 position, Vector2 scale, Color color, SpriteFont font)
         {
-            float xStep = (float)(font.GlyphWidth + font.FontSize) / (float)(font.FontTexture.Width);
-            float yStep = (float)(font.GlyphHeight + font.FontSize) / (float)(font.FontTexture.Height);
+            float xStep = (float)(font.GlyphWidth + 10) / (float)(font.FontTexture.Width);
+            float yStep = (float)(font.GlyphHeight + 10) / (float)(font.FontTexture.Height);
 
             float x = position.X;
 
@@ -399,6 +405,7 @@ namespace Jack.Graphics
                 Vector2 size = new Vector2(font.GlyphWidth * scale.X, font.GlyphHeight * scale.Y);
 
                 Draw(font.FontTexture, pos, size, 0, srcRect, color);
+                // StrokeRect(pos, size, 1, Color.White);
 
                 x += (scale.X * font.CharSpacing);
             }

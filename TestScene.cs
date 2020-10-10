@@ -47,7 +47,7 @@ namespace Jack
 
             _camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
 
-            _font = new SpriteFont("Menlo", 37);
+            _font = new SpriteFont("Terminus (TTF)", 37);
 
             Random rand = new Random();
 
@@ -95,10 +95,12 @@ namespace Jack
                 }
             }
 
-            spriteBatch.FillQuad(new Vector2(JackApp.WindowWidth / 2, JackApp.WindowHeight / 2), new Vector2(500, 300), 0, Color.Black);
+            spriteBatch.FillQuad(new Vector2(JackApp.WindowWidth / 2, JackApp.WindowHeight), new Vector2(500, 300), 0, Color.Black);
 
-            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight / 2 - 50), new Vector2(2), Color.White, _font);
-            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight / 2 + 50), new Vector2(2.0f, 1.5f), Color.White, _font);
+            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight - 50), new Vector2(1), Color.White, _font);
+            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight + 50), new Vector2(2.0f, 1.5f), Color.White, _font);
+
+            spriteBatch.Draw(_font.FontTexture, new Vector2(JackApp.WindowWidth * 1.2f, JackApp.WindowHeight * 0.7f), new Vector2(_font.FontTexture.Width, _font.FontTexture.Height), 0, Color.White);
 
             App.SpriteBatch.End();
         }
@@ -108,19 +110,19 @@ namespace Jack
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Key.W))
             {
-                Root.Transform.Position += new Vector2(0, -5f);
+                _camera.Position += new Vector2(0, -0.01f);
             }
             if (state.IsKeyDown(Key.S))
             {
-                Root.Transform.Position += new Vector2(0, 5f);
+                _camera.Position += new Vector2(0, 0.01f);
             }
             if (state.IsKeyDown(Key.A))
             {
-                Root.Transform.Position += new Vector2(-5f, 0);
+                _camera.Position += new Vector2(-0.01f, 0);
             }
             if (state.IsKeyDown(Key.D))
             {
-                Root.Transform.Position += new Vector2(5f, 0);
+                _camera.Position += new Vector2(0.01f, 0);
             }
 
             if (state.IsKeyDown(Key.Q))
