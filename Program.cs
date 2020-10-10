@@ -24,7 +24,8 @@ namespace CS_Jack
             public Application() : base()
             {
                 WindowTitle = "Jack Sandbox";
-                WindowSize = new Size(1000, 700);
+                WindowWidth = 1000;
+                WindowHeight = 700;
                 WindowVsync = VSyncMode.On;
             }
 

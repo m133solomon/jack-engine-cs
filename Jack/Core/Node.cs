@@ -12,7 +12,7 @@ namespace Jack.Core
         public string Name { get; set; }
 
         public Node Parent { get; set; }
-        public List<Node> Children { get; } = new List<Node>();
+        public List<Node> Children { get; set; } = null;
 
         public Transform Transform { get; set; }
 
@@ -34,18 +34,34 @@ namespace Jack.Core
                     return _globalTransform;
                 }
             }
-            // todo: find a way to make a setter for this
+            set
+            {
+                if (Parent == null)
+                {
+                    Transform = value;
+                }
+                else
+                {
+                    // todo: find a way to make a setter for this
+                }
+            }
         }
 
-        public Node(string name = "NewNode")
+        public Node(string name = null)
         {
-            Name = name;
+            Name = name == null ? "Node-" + NodeCount : name;
             _globalTransform = new Transform();
             Transform = new Transform { Node = this };
         }
 
         public void AddChild(Node node)
         {
+            // note: adding this gave a 10 fps increase at 5000 quad nodes
+            if (Children == null)
+            {
+                Children = new List<Node>();
+            }
+
             node.Parent = this;
             Children.Add(node);
         }

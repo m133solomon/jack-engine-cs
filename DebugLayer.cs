@@ -17,7 +17,7 @@ namespace Jack
         private static Camera _camera;
         private static SpriteFont _font;
 
-        private static Color _panelColor = Color.FromArgb(150, 0, 0, 0);
+        private static Color _panelColor = Color.FromArgb(200, 0, 0, 0);
         private static Color _accentColor = Color.DeepPink;
 
         private static Panel _hierarchyPanel;
@@ -26,12 +26,12 @@ namespace Jack
         public static void Init(JackApp app)
         {
             _app = app;
-            _camera = new Camera(_app, JackApp.WindowSize.Width, JackApp.WindowSize.Height);
+            _camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
             _font = new SpriteFont("Menlo", 37);
 
             MakePanels();
 
-            _app.OnWindowResize += MakePanels;
+            JackApp.OnWindowResize += MakePanels;
         }
 
         private static void MakePanels()
@@ -41,23 +41,24 @@ namespace Jack
             _hierarchyPanel = new Panel(
                 new Rectangle(
                     panelMargin, panelMargin, panelWidth,
-                    JackApp.WindowSize.Height - panelMargin * 2
+                    JackApp.WindowHeight - panelMargin * 2
                 )
             )
             { FillColor = _panelColor, StrokeColor = _accentColor };
 
             _propertiesPanel = new Panel(
                 new Rectangle(
-                    JackApp.WindowSize.Width - panelWidth - panelMargin, panelMargin,
-                    panelWidth, JackApp.WindowSize.Height - panelMargin * 2
+                    JackApp.WindowWidth - panelWidth - panelMargin, panelMargin,
+                    panelWidth, JackApp.WindowHeight - panelMargin * 2
                 )
             )
             { FillColor = _panelColor, StrokeColor = _accentColor };
         }
 
+        private static float _deltaTime = 0;
         public static void Update(float deltaTime)
         {
-
+            _deltaTime = deltaTime;
         }
 
         public static void Draw(SpriteBatch spriteBatch)
@@ -66,10 +67,7 @@ namespace Jack
             {
                 spriteBatch.Begin(_camera);
                 DrawNodesPanel(spriteBatch);
-                if (_focusedNode == null)
-                {
-                    _focusedNode = JackApp.CurrentScene.Root.Children[0];
-                }
+                DrawInfo(spriteBatch);
 
                 if (_focusedNode != null)
                 {
@@ -77,6 +75,18 @@ namespace Jack
                 }
                 spriteBatch.End();
             }
+        }
+
+        private static void DrawInfo(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(
+                "FPS: " + MathF.Ceiling(1.0f / _deltaTime), new Vector2(JackApp.WindowWidth / 2 + 100, 30),
+                new Vector2(2.0f, 1.5f), Color.White, _font
+            );
+            spriteBatch.DrawString(
+                "Total Nodes: " + (JackApp.CurrentScene.Root.Children.Count + 1), new Vector2(JackApp.WindowWidth / 2 - 100 - 100, 30),
+                new Vector2(2.0f, 1.5f), Color.White, _font
+            );
         }
 
         private static void DrawNodesPanel(SpriteBatch spriteBatch)
@@ -93,8 +103,15 @@ namespace Jack
         // todo: allow me to click on the node
         private static void DrawNode(SpriteBatch spriteBatch, Node node, int startX, ref int startY)
         {
+            if (startY > JackApp.WindowHeight)
+            {
+                // note: maybe add some scroll instead of stopping drawing
+                return;
+            }
+            Rectangle textBounds = _font.GetBounds(node.Name);
             Rectangle rectangle = new Rectangle(
-                startX - 10, startY - 20, 100, _font.FontSize
+                // note: multiply with scale
+                startX - 10, startY - 20, textBounds.Width * 2, (int)(textBounds.Height * 1.5f)
             );
             bool hovered = rectangle.Includes(JackApp.MousePosition);
             spriteBatch.StrokeRect(rectangle, 1, hovered ? _accentColor : Color.White);
@@ -110,23 +127,26 @@ namespace Jack
 
             spriteBatch.DrawString(node.Name, new Vector2(startX, startY), new Vector2(2, 1.5f), Color.White, _font);
 
-            for (int i = 0; i < node.Children.Count; i++)
+            if (node.Children != null)
             {
-                spriteBatch.DrawLine(
-                    new Vector2(startX, startY + _yStep),
-                    new Vector2(startX, startY + _yStep / 2),
-                    2, Color.DeepPink
-                );
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    spriteBatch.DrawLine(
+                        new Vector2(startX, startY + _yStep),
+                        new Vector2(startX, startY + _yStep / 2),
+                        2, Color.DeepPink
+                    );
 
-                int sx = startX + _xStep;
-                startY += _yStep;
+                    int sx = startX + _xStep;
+                    startY += _yStep;
 
-                spriteBatch.DrawLine(
-                    new Vector2(startX, startY),
-                    new Vector2(startX + _xStep - 15, startY),
-                    2, Color.DeepPink
-                );
-                DrawNode(spriteBatch, node.Children[i], sx, ref startY);
+                    spriteBatch.DrawLine(
+                        new Vector2(startX, startY),
+                        new Vector2(startX + _xStep - 15, startY),
+                        2, Color.DeepPink
+                    );
+                    DrawNode(spriteBatch, node.Children[i], sx, ref startY);
+                }
             }
         }
 
@@ -144,6 +164,7 @@ namespace Jack
             int sx = _propertiesPanel.Rectangle.Left;
             foreach (var property in props)
             {
+                object propValue = property.GetValue(_focusedNode);
                 // draw info different based on property type
                 if (property.PropertyType == typeof(Transform))
                 {
@@ -151,7 +172,7 @@ namespace Jack
                     spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2, 1.4f), Color.White, _font);
                     sy += _yStep;
 
-                    Transform transform = (Transform)property.GetValue(_focusedNode);
+                    Transform transform = (Transform)propValue;
                     text = string.Format("Position: {0}", transform.Position);
                     spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(2, 1.4f), Color.White, _font);
                     sy += _yStep;
@@ -165,16 +186,16 @@ namespace Jack
 
                 // todo: find  a better way to check if type is list
                 // note: only works for node
-                else if (property.PropertyType == typeof(List<Node>))
+                else if (property.PropertyType == typeof(List<Node>) && propValue != null)
                 {
-                    var list = property.GetValue(_focusedNode) as List<Node>;
+                    var list = propValue as List<Node>;
                     string text = string.Format("- {0} Count: {1}", property.Name, list.Count);
                     spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2, 1.4f), Color.White, _font);
                     sy += _yStep;
                 }
                 else
                 {
-                    string text = string.Format("- {0}: {1}", property.Name, property.GetValue(_focusedNode));
+                    string text = "- " + property.Name + ": " + propValue;
                     spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2, 1.4f), Color.White, _font);
                     sy += _yStep;
                 }

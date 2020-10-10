@@ -20,16 +20,30 @@ namespace Jack
     {
         private static GameWindow _window;
 
-        private static Size _windowSize;
-        public static Size WindowSize
+        private static int _windowWidth;
+        public static int WindowWidth
         {
-            get => _window.ClientSize;
+            get => _window.Width;
             set
             {
-                _windowSize = value;
+                _windowWidth = value;
                 if (_window != null)
                 {
-                    _window.ClientSize = value;
+                    _window.Width = value;
+                }
+            }
+        }
+
+        private static int _windowHeight;
+        public static int WindowHeight
+        {
+            get => _window.Height;
+            set
+            {
+                _windowHeight = value;
+                if (_window != null)
+                {
+                    _window.Height = value;
                 }
             }
         }
@@ -67,19 +81,20 @@ namespace Jack
         protected GameWindowFlags WindowFlags { get; set; } = GameWindowFlags.Default;
 
         public delegate void JackEventHandler();
-        public event JackEventHandler OnExit;
-        public event JackEventHandler OnWindowResize;
+        public static event JackEventHandler OnExit;
+        public static event JackEventHandler OnWindowResize;
+
+        public delegate void JackMouseEventHandler(MouseButton mouseButton);
+        public static event JackMouseEventHandler OnMouseDown;
 
         public SpriteBatch SpriteBatch { get; private set; }
 
         public static Scene CurrentScene { get; set; }
 
-        private static Vector2 _mousePosition = Vector2.Zero;
-        public static Vector2 MousePosition => _mousePosition;
-
         public JackApp()
         {
-            _windowSize = new Size(800, 600);
+            _windowWidth = 800;
+            _windowHeight = 600;
             _windowTitle = "Jack Application";
             _windowVsync = VSyncMode.On;
         }
@@ -87,37 +102,51 @@ namespace Jack
         public void Run()
         {
             _window = new GameWindow(
-                _windowSize.Width, _windowSize.Height, GraphicsMode.Default, _windowTitle,
+                _windowWidth, _windowHeight, GraphicsMode.Default, _windowTitle,
                 WindowFlags, DisplayDevice.Default, OpenGLMajorVersion, OpenGLMinorVersion, GraphicsContextFlags.Default
             );
 
             _window.VSync = _windowVsync;
 
-            _window.Load += new EventHandler<EventArgs>(OnLoad);
-            _window.UpdateFrame += new EventHandler<FrameEventArgs>(OnUpdateFrame);
-            _window.RenderFrame += new EventHandler<FrameEventArgs>(OnRenderFrame);
-            _window.Unload += new EventHandler<EventArgs>(OnUnload);
-            _window.Resize += new EventHandler<EventArgs>(OnResize);
-            _window.MouseMove += new EventHandler<MouseMoveEventArgs>(OnMouseMove);
+            _window.Load += new EventHandler<EventArgs>(Load);
+            _window.UpdateFrame += new EventHandler<FrameEventArgs>(UpadateFrame);
+            _window.RenderFrame += new EventHandler<FrameEventArgs>(RenderFrame);
+            _window.Unload += new EventHandler<EventArgs>(Unload);
+            _window.Resize += new EventHandler<EventArgs>(Resize);
+            _window.MouseMove += new EventHandler<MouseMoveEventArgs>(MouseMove);
+            _window.MouseDown += new EventHandler<MouseButtonEventArgs>(MouseDown);
             _window.Run();
         }
 
-        private void OnResize(object sender, EventArgs e)
+        private void Resize(object sender, EventArgs e)
         {
-            _windowSize = new Size(_window.Width, _window.Height);
+            _windowWidth = _window.Width;
+            _windowHeight = _window.Height;
             if (OnWindowResize != null)
             {
                 OnWindowResize();
             }
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e)
+        // todo: wrap this into input class (maybe)
+        private static Vector2 _mousePosition = Vector2.Zero;
+        public static Vector2 MousePosition => _mousePosition;
+
+        private void MouseMove(object sender, MouseEventArgs e)
         {
             _mousePosition.X = e.X;
             _mousePosition.Y = e.Y;
         }
 
-        private void OnLoad(object sender, EventArgs e)
+        private void MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (OnMouseDown != null)
+            {
+                OnMouseDown(e.Button);
+            }
+        }
+
+        private void Load(object sender, EventArgs e)
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -134,7 +163,7 @@ namespace Jack
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
-        private void OnUpdateFrame(object sender, FrameEventArgs e)
+        private void UpadateFrame(object sender, FrameEventArgs e)
         {
             Update((float)e.Time);
 
@@ -145,7 +174,7 @@ namespace Jack
 
         }
 
-        private void OnRenderFrame(object sender, FrameEventArgs e)
+        private void RenderFrame(object sender, FrameEventArgs e)
         {
             if (CurrentScene != null)
             {
@@ -157,7 +186,7 @@ namespace Jack
             _window.SwapBuffers();
         }
 
-        private void OnUnload(object sender, EventArgs e)
+        private void Unload(object sender, EventArgs e)
         {
             Exit();
             if (OnExit != null)

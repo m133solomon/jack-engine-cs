@@ -7,8 +7,6 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Jack.Graphics
 {
-    // todo: ADD SOME FUCKING COMMENTS DOG
-
     public class SpriteBatch : IDisposable
     {
         private const int POSITION_SIZE = 2;
@@ -109,7 +107,7 @@ namespace Jack.Graphics
             _quadVao.VertexAttribPointer(2, TEX_COORDS_SIZE, VertexAttribPointerType.Float, VertexSize, POSITION_SIZE + COLOR_SIZE);
             _quadVao.VertexAttribPointer(3, TEX_INDEX_SIZE, VertexAttribPointerType.Float, VertexSize, POSITION_SIZE + COLOR_SIZE + TEX_COORDS_SIZE);
 
-            jack.OnExit += Dispose;
+            JackApp.OnExit += Dispose;
         }
 
         private int[] GenerateIndices(int quadsAmount)
@@ -405,6 +403,8 @@ namespace Jack.Graphics
                 x += (scale.X * font.CharSpacing);
             }
         }
+
+        // todo: make function to draw string inside quad with word wrap or smth
 
         public void Dispose()
         {

@@ -15,6 +15,8 @@ namespace Jack.Core
         {
             App = app;
             Root = new Node("Scene Root");
+            // the root must have a children list
+            Root.Children = new List<Node>();
         }
 
         public virtual void OnEnter() { }

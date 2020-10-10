@@ -10,10 +10,10 @@ namespace Jack
 {
     public class QuadNode : Node, IUpdateable, IDrawable
     {
-        // todo: make spritebatch / app global
         private float _dir;
         private float _speed;
         private Color _color;
+        public Color Color => _color;
 
         public QuadNode(Vector2 position, Vector2 size, Color color, int dir, float speed) : base()
         {
@@ -38,39 +38,34 @@ namespace Jack
     public class TestScene : Scene
     {
         Camera _camera;
+        SpriteFont _font;
 
         public TestScene(JackApp app) : base(app)
         {
-            _camera = new Camera(app, JackApp.WindowSize.Width, JackApp.WindowSize.Height);
+            int width = JackApp.WindowWidth;
+            int height = JackApp.WindowHeight;
 
-            Root.AddChild(new QuadNode(
-                new Vector2(JackApp.WindowSize.Width / 2 - 300, JackApp.WindowSize.Height / 2),
-                new Vector2(120), Color.Cyan, 1, 1.0f)
-            { Name = "quad_1" });
+            _camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
 
-            Root.AddChild(new QuadNode(
-                new Vector2(JackApp.WindowSize.Width / 2 + 300, JackApp.WindowSize.Height / 2),
-                new Vector2(120), Color.DeepPink, -1, 1.0f
-            )
-            { Name = "quad_2" });
+            _font = new SpriteFont("Menlo", 37);
 
-            Root.AddChild(new QuadNode(
-                new Vector2(JackApp.WindowSize.Width / 2, JackApp.WindowSize.Height / 2),
-                new Vector2(200), Color.BlueViolet, -1, 1.0f
-            )
-            { Name = "quad_3" });
+            Random rand = new Random();
 
-            Root.AddChild(new QuadNode(
-                new Vector2(JackApp.WindowSize.Width / 2, JackApp.WindowSize.Height / 2),
-                new Vector2(40), Color.White, 1, 1.0f
-            )
-            { Name = "quad_4" });
-
-            // var props = Root.Children[0].GetType().GetProperties();
-            // foreach (var prop in props)
-            // {
-            // Console.WriteLine("{0}-{1}", prop.Name, prop.GetValue(Root.Children[0]));
-            // }
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 pos = new Vector2(
+                    rand.Next(width / 2 - 300, width / 2 + 300),
+                    rand.Next(height / 2 - 300, height / 2 + 300)
+                );
+                Vector2 size = new Vector2(rand.Next(40, 200));
+                Color color = Color.FromArgb(
+                rand.Next(0, 255),
+                rand.Next(0, 255),
+                rand.Next(0, 255)
+                );
+                int dir = rand.Next(100) < 50 ? -1 : 1;
+                Root.AddChild(new QuadNode(pos, size, color, dir, 1.0f));
+            }
         }
 
         public override void Update(float deltaTime)
@@ -99,6 +94,11 @@ namespace Jack
                     drawable.Draw(spriteBatch);
                 }
             }
+
+            spriteBatch.FillQuad(new Vector2(JackApp.WindowWidth / 2, JackApp.WindowHeight / 2), new Vector2(500, 300), 0, Color.Black);
+
+            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight / 2 - 50), new Vector2(2), Color.White, _font);
+            spriteBatch.DrawString("hello world", new Vector2(JackApp.WindowWidth / 2 - 200, JackApp.WindowHeight / 2 + 50), new Vector2(2.0f, 1.5f), Color.White, _font);
 
             App.SpriteBatch.End();
         }

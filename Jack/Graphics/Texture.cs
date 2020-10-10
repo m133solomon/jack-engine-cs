@@ -16,9 +16,13 @@ namespace Jack.Graphics
         public int Width { get; private set; }
         public int Height { get; private set; }
 
+        // todo: check min / mag filter
+        private TextureMinFilter _minFilter;
+        private TextureMagFilter _magFilter;
+
         public System.Drawing.Rectangle Rectangle => new System.Drawing.Rectangle(0, 0, Width, Height);
 
-        public Texture(string path)
+        public Texture(string path, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             if (!File.Exists(path))
             {
@@ -27,13 +31,31 @@ namespace Jack.Graphics
 
             Image<Rgba32> image = (Image<Rgba32>)Image.Load(path);
 
+            _minFilter = minFilter;
+            _magFilter = magFilter;
+
             MakeTexture(image);
         }
 
-        public Texture(MemoryStream stream)
+        public Texture(MemoryStream stream, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             Image<Rgba32> image = (Image<Rgba32>)Image.Load(stream.ToArray());
+
+            _minFilter = minFilter;
+            _magFilter = magFilter;
+
             MakeTexture(image);
+        }
+
+        public Texture(IntPtr data, int width, int height, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        {
+            Width = width;
+            Height = height;
+
+            _minFilter = minFilter;
+            _magFilter = magFilter;
+
+            Load(data, width, height);
         }
 
         private void MakeTexture(Image<Rgba32> image)
@@ -53,13 +75,6 @@ namespace Jack.Graphics
             }
         }
 
-        public Texture(IntPtr data, int width, int height)
-        {
-            Width = width;
-            Height = height;
-            Load(data, width, height);
-        }
-
         private void Load(IntPtr data, int width, int height)
         {
             _id = GL.GenTexture();
@@ -70,9 +85,8 @@ namespace Jack.Graphics
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            // todo: find a way to change linear to neareast
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)_minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)_magFilter);
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 

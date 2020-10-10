@@ -45,23 +45,23 @@ namespace Jack.Graphics
             }
         }
 
-        private Size _size;
+        private int _width;
+        private int _height;
         public Rectangle Bounds =>
-            new Rectangle((int)(_position.X - _size.Width / 2), (int)(_position.Y - _size.Height / 2), _size.Width, _size.Height);
+            new Rectangle((int)(_position.X - _width / 2), (int)(_position.Y - _height / 2), _width, _height);
 
         // todo: different resize modes: strecth aspect ratios etc
-        private JackApp _app;
-        public Camera(JackApp app, int width, int height)
+        public Camera(int width, int height)
         {
-            _size = new Size(width, height);
+            _width = width;
+            _height = height;
             _position = Vector2.Zero;
             _scale = Vector2.One;
 
             ViewMatrix = Matrix4.Identity;
-            UpdateProjectionMatrix(_size.Width, _size.Height);
+            UpdateProjectionMatrix(_width, _height);
 
-            _app = app;
-            _app.OnWindowResize += OnResize;
+            JackApp.OnWindowResize += OnResize;
         }
 
         private void UpdateProjectionMatrix(int width, int height)
@@ -72,8 +72,9 @@ namespace Jack.Graphics
 
         private void OnResize()
         {
-            _size = JackApp.WindowSize;
-            UpdateProjectionMatrix(_size.Width, _size.Height);
+            _width = JackApp.WindowWidth;
+            _height = JackApp.WindowHeight;
+            UpdateProjectionMatrix(_width, _height);
         }
 
         private void TranslateMatrix(Vector2 amount)

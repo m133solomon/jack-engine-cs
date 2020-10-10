@@ -73,6 +73,11 @@ namespace Jack.Graphics
             }
         }
 
+        public Rectangle GetBounds(string text)
+        {
+            return new Rectangle(0, 0, GlyphWidth * text.Length, GlyphHeight);
+        }
+
         public void Dispose()
         {
             FontTexture.Dispose();
