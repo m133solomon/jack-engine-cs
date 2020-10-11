@@ -6,8 +6,8 @@ namespace Jack.Core
     public class Scene
     {
         public Node Root { get; private set; }
-
         public JackApp App { get; set; }
+        public Camera Camera { get; set; }
 
         public string Name { get; set; } = "New Scene";
 
@@ -15,6 +15,7 @@ namespace Jack.Core
         {
             App = app;
             Root = new Node("Scene Root");
+            Camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
             // the root must have a children list
             Root.Children = new List<Node>();
         }

@@ -48,8 +48,8 @@ namespace Jack
 
             _propertiesPanel = new Panel(
                 new Rectangle(
-                    JackApp.WindowWidth - panelWidth - panelMargin, panelMargin,
-                    panelWidth, JackApp.WindowHeight - panelMargin * 2
+                    JackApp.WindowWidth - panelWidth - panelMargin - 100, panelMargin,
+                    panelWidth + 100, JackApp.WindowHeight - panelMargin * 2
                 )
             )
             { FillColor = _panelColor, StrokeColor = _accentColor };
@@ -85,6 +85,10 @@ namespace Jack
             );
             spriteBatch.DrawString(
                 "Total Nodes: " + (JackApp.CurrentScene.Root.Children.Count + 1), new Vector2(JackApp.WindowWidth / 2 - 200 - 100, 50),
+                new Vector2(2.0f), Color.White, _font
+            );
+            spriteBatch.DrawString(
+                "Camera Pos: " + JackApp.CurrentScene.Camera.Position, new Vector2(JackApp.WindowWidth / 2 - 200 - 100, 100),
                 new Vector2(2.0f), Color.White, _font
             );
         }
@@ -167,18 +171,18 @@ namespace Jack
                 if (property.PropertyType == typeof(Transform))
                 {
                     string text = "- " + property.Name;
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
 
                     Transform transform = (Transform)propValue;
                     text = string.Format("Position: {0}", transform.Position);
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                     text = string.Format("Scale: {0}", transform.Scale);
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                     text = string.Format("Rotation: {0}", transform.Rotation);
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep * 2, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                 }
 
@@ -188,13 +192,13 @@ namespace Jack
                 {
                     var list = propValue as List<Node>;
                     string text = string.Format("- {0} Count: {1}", property.Name, list.Count);
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                 }
                 else
                 {
                     string text = "- " + property.Name + ": " + propValue;
-                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(2.0f), Color.White, _font);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                 }
             }

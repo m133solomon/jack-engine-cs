@@ -9,7 +9,7 @@ namespace Jack.Graphics
 {
     public class SpriteFont : IDisposable
     {
-        // todo: find a way to oprimize bitmap size
+        // todo: find a way to optimize bitmap size
         // + general font spacing
         public float GlyphWidth { get; private set; }
         public float GlyphHeight { get; private set; }

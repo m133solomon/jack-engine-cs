@@ -1,47 +1,69 @@
 using OpenTK;
-using Jack.Graphics;
 using System.Drawing;
-using System;
 
 namespace Jack.Graphics
 {
     public class Camera
     {
-        public Matrix4 ProjectionMatrix { get; set; }
-        public Matrix4 ViewMatrix { get; set; }
+        private bool _hasChanged = false;
 
-        // note: i think this is broken
-        private Vector2 _position;
+        private Matrix4 _projectionMatrix;
+        private Matrix4 _viewMatrix = Matrix4.Identity;
+
+        public Matrix4 ViewProjMatrix
+        {
+            get
+            {
+                if (_hasChanged)
+                {
+                    UpdateViewMatrix();
+                }
+                return _projectionMatrix * _viewMatrix;
+            }
+        }
+
+        private Vector2 _position = Vector2.Zero;
         public Vector2 Position
         {
             get => _position;
             set
             {
-                TranslateMatrix(value - _position);
+                if (_position == value)
+                {
+                    return;
+                }
                 _position = value;
+                _hasChanged = true;
             }
         }
 
-        private Vector2 _scale;
+        private Vector2 _scale = Vector2.One;
         public Vector2 Scale
         {
             get => _scale;
             set
             {
-                ScaleMatrix(new Vector2(_scale.X / value.X, _scale.Y / value.Y));
+                if (_scale == value)
+                {
+                    return;
+                }
+                _hasChanged = true;
                 _scale = value;
             }
         }
 
-        // todo: fix this shit
-        private float _rotation;
+        public float _rotation = 0;
         public float Rotation
         {
             get => _rotation;
             set
             {
-                RotateMatrix(value - _rotation);
+                if (_rotation == value)
+                {
+                    return;
+                }
                 _rotation = value;
+                _hasChanged = true;
             }
         }
 
@@ -55,55 +77,32 @@ namespace Jack.Graphics
         {
             _width = width;
             _height = height;
-            _position = Vector2.Zero;
-            _scale = Vector2.One;
 
-            ViewMatrix = Matrix4.Identity;
-            UpdateProjectionMatrix(_width, _height);
+            UpdateProjection(_width, _height);
+            UpdateViewMatrix();
 
             JackApp.OnWindowResize += OnResize;
         }
 
-        private void UpdateProjectionMatrix(int width, int height)
+        private void UpdateProjection(int width, int height)
         {
-            // origin in top left, y is down
-            ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1.0f, 1.0f);
+            _width = width;
+            _height = height;
+            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1.0f, 1.0f);
         }
 
         private void OnResize()
         {
-            _width = JackApp.WindowWidth;
-            _height = JackApp.WindowHeight;
-            UpdateProjectionMatrix(_width, _height);
+            UpdateProjection(JackApp.WindowWidth, JackApp.WindowHeight);
         }
 
-        private void TranslateMatrix(Vector2 amount)
+        private void UpdateViewMatrix()
         {
-            _position += amount;
-            // note: find out why I need that minus
-            Matrix4 translation = Matrix4.CreateTranslation(new Vector3(-amount.X, amount.Y, 0.0f));
-            ViewMatrix *= translation;
-        }
-
-        private void ScaleMatrix(Vector2 amount)
-        {
-            _scale *= amount;
-            Matrix4 scale = Matrix4.CreateScale(new Vector3(amount.X, amount.Y, 0.0f));
-            ViewMatrix *= scale;
-        }
-
-        private void ScaleMatrix(float amount)
-        {
-            ScaleMatrix(new Vector2(amount));
-        }
-
-        // todo: methdod to project point to world and back
-
-        private void RotateMatrix(float amount)
-        {
-            _rotation += amount;
-            Matrix4 rotation = Matrix4.CreateRotationZ(amount);
-            ViewMatrix *= rotation;
+            Matrix4 translationMatrix = Matrix4.CreateTranslation(new Vector3(-_position.X, _position.Y, 0.0f));
+            Matrix4 scaleMatrix = Matrix4.CreateScale(new Vector3(_scale.X, _scale.Y, 1.0f));
+            Matrix4 rotationMatrix = Matrix4.CreateRotationZ(_rotation);
+            _viewMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+            _hasChanged = false;
         }
     }
 }

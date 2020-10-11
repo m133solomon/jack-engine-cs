@@ -11,7 +11,6 @@ using Jack.Graphics;
 using Jack.Core;
 
 // todo: some audio work
-// todo: input work
 
 namespace Jack
 {

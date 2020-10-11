@@ -13,7 +13,7 @@ namespace Jack.Graphics
         private const int COLOR_SIZE = 4;
         private const int TEX_COORDS_SIZE = 2;
         private const int TEX_INDEX_SIZE = 1;
-        // todo: maybe find a way and make this dynamic
+        // maybe: find a way and make this dynamic
         private const int TEXTURE_SLOTS_COUNT = 8;
 
         private static readonly float[] _quadVertices =
@@ -154,11 +154,10 @@ namespace Jack.Graphics
             // set the world matrix inside the shader
             // note: i can also send proj matrix and view matrix and 
             // have them multiplied on the gpu
-            Matrix4 viewProj = camera.ProjectionMatrix * camera.ViewMatrix;
 
             _quadShader.Bind();
             _quadShader.SetUniform("u_Textures", _textureSlots);
-            _quadShader.SetUniform("u_MVP", viewProj);
+            _quadShader.SetUniform("u_MVP", camera.ViewProjMatrix);
         }
 
         public void End()

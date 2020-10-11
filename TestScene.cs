@@ -37,15 +37,12 @@ namespace Jack
 
     public class TestScene : Scene
     {
-        Camera _camera;
         SpriteFont _font;
 
         public TestScene(JackApp app) : base(app)
         {
             int width = JackApp.WindowWidth;
             int height = JackApp.WindowHeight;
-
-            _camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
 
             _font = new SpriteFont("Terminus (TTF)", 37);
 
@@ -86,7 +83,7 @@ namespace Jack
         {
             App.Clear(Color.FromArgb(20, 20, 20));
 
-            spriteBatch.Begin(_camera);
+            spriteBatch.Begin(Camera);
             foreach (Node node in Root.Children)
             {
                 if (node is IDrawable drawable)
@@ -110,28 +107,28 @@ namespace Jack
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Key.W))
             {
-                _camera.Position += new Vector2(0, -0.01f);
+                Camera.Position += new Vector2(0, -0.01f);
             }
             if (state.IsKeyDown(Key.S))
             {
-                _camera.Position += new Vector2(0, 0.01f);
+                Camera.Position += new Vector2(0, 0.01f);
             }
             if (state.IsKeyDown(Key.A))
             {
-                _camera.Position += new Vector2(-0.01f, 0);
+                Camera.Position += new Vector2(-0.01f, 0);
             }
             if (state.IsKeyDown(Key.D))
             {
-                _camera.Position += new Vector2(0.01f, 0);
+                Camera.Position += new Vector2(0.01f, 0);
             }
 
             if (state.IsKeyDown(Key.Q))
             {
-                _camera.Scale *= 1.01f;
+                Camera.Scale *= 1.01f;
             }
             else if (state.IsKeyDown(Key.E))
             {
-                _camera.Scale *= 0.99f;
+                Camera.Scale *= 0.99f;
             }
         }
     }
