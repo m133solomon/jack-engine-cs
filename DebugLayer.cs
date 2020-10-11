@@ -27,7 +27,7 @@ namespace Jack
         {
             _app = app;
             _camera = new Camera(JackApp.WindowWidth, JackApp.WindowHeight);
-            _font = new SpriteFont("Courier", 22);
+            _font = new SpriteFont("Terminus (TTF)", 22);
 
             MakePanels();
 
@@ -100,7 +100,6 @@ namespace Jack
         private static int _yStep = 40;
         private static int _xStep = 40;
 
-        // todo: allow me to click on the node
         private static void DrawNode(SpriteBatch spriteBatch, Node node, int startX, ref int startY)
         {
             if (startY > JackApp.WindowHeight)
@@ -113,10 +112,9 @@ namespace Jack
                 // note: multiply with scale
                 startX - 10, startY - 20, textBounds.Width, textBounds.Height
             );
-            bool hovered = rectangle.Includes(JackApp.MousePosition);
-            spriteBatch.StrokeRect(rectangle, 1, hovered ? _accentColor : Color.White);
+            bool hovered = rectangle.Includes(Input.MousePosition);
 
-            if (hovered)
+            if (hovered && _focusedNode != node)
             {
                 MouseState ms = Mouse.GetState();
                 if (ms.IsButtonDown(MouseButton.Left))
@@ -125,7 +123,7 @@ namespace Jack
                 }
             }
 
-            spriteBatch.DrawString(node.Name, new Vector2(startX, startY), new Vector2(2.0f), Color.White, _font);
+            spriteBatch.DrawString(node.Name, new Vector2(startX, startY), new Vector2(2.0f), hovered ? _accentColor : Color.White, _font);
 
             if (node.Children != null)
             {

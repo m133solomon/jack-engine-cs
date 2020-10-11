@@ -10,7 +10,6 @@ using OpenTK.Input;
 using Jack.Graphics;
 using Jack.Core;
 
-// todo: fullscreen support
 // todo: some audio work
 // todo: input work
 
@@ -84,9 +83,6 @@ namespace Jack
         public static event JackEventHandler OnExit;
         public static event JackEventHandler OnWindowResize;
 
-        public delegate void JackMouseEventHandler(MouseButton mouseButton);
-        public static event JackMouseEventHandler OnMouseDown;
-
         public SpriteBatch SpriteBatch { get; private set; }
 
         public static Scene CurrentScene { get; set; }
@@ -113,8 +109,9 @@ namespace Jack
             _window.RenderFrame += new EventHandler<FrameEventArgs>(RenderFrame);
             _window.Unload += new EventHandler<EventArgs>(Unload);
             _window.Resize += new EventHandler<EventArgs>(Resize);
-            _window.MouseMove += new EventHandler<MouseMoveEventArgs>(MouseMove);
-            _window.MouseDown += new EventHandler<MouseButtonEventArgs>(MouseDown);
+            _window.MouseMove += new EventHandler<MouseMoveEventArgs>(Input.MouseMove);
+            _window.MouseDown += new EventHandler<MouseButtonEventArgs>(Input.MouseDown);
+            _window.MouseUp += new EventHandler<MouseButtonEventArgs>(Input.MouseUp);
             _window.Run();
         }
 
@@ -125,24 +122,6 @@ namespace Jack
             if (OnWindowResize != null)
             {
                 OnWindowResize();
-            }
-        }
-
-        // todo: wrap this into input class (maybe)
-        private static Vector2 _mousePosition = Vector2.Zero;
-        public static Vector2 MousePosition => _mousePosition;
-
-        private void MouseMove(object sender, MouseEventArgs e)
-        {
-            _mousePosition.X = e.X;
-            _mousePosition.Y = e.Y;
-        }
-
-        private void MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (OnMouseDown != null)
-            {
-                OnMouseDown(e.Button);
             }
         }
 
