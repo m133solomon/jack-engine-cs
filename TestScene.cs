@@ -104,29 +104,28 @@ namespace Jack
 
         private void MoveCamera()
         {
-            KeyboardState state = Keyboard.GetState();
-            if (state.IsKeyDown(Key.W))
+            if (Input.IsDown(Key.W))
             {
                 Camera.Position += new Vector2(0, -0.01f);
             }
-            if (state.IsKeyDown(Key.S))
+            if (Input.IsDown(Key.S))
             {
                 Camera.Position += new Vector2(0, 0.01f);
             }
-            if (state.IsKeyDown(Key.A))
+            if (Input.IsDown(Key.A))
             {
                 Camera.Position += new Vector2(-0.01f, 0);
             }
-            if (state.IsKeyDown(Key.D))
+            if (Input.IsDown(Key.D))
             {
                 Camera.Position += new Vector2(0.01f, 0);
             }
 
-            if (state.IsKeyDown(Key.Q))
+            if (Input.IsDown(Key.Q))
             {
                 Camera.Scale *= 1.01f;
             }
-            else if (state.IsKeyDown(Key.E))
+            else if (Input.IsDown(Key.E))
             {
                 Camera.Scale *= 0.99f;
             }

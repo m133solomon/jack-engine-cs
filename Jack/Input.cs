@@ -46,5 +46,17 @@ namespace Jack
             _mousePosition.X = e.X;
             _mousePosition.Y = e.Y;
         }
+
+        private static KeyboardState _keyboardState;
+
+        public static void Update()
+        {
+            _keyboardState = Keyboard.GetState();
+        }
+
+        public static bool IsDown(Key key)
+        {
+            return _keyboardState.IsKeyDown(key);
+        }
     }
 }

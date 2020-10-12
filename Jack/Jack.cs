@@ -143,6 +143,8 @@ namespace Jack
 
         private void UpadateFrame(object sender, FrameEventArgs e)
         {
+            Input.Update();
+
             Update((float)e.Time);
 
             if (CurrentScene != null)
