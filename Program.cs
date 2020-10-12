@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using OpenTK;
+using OpenTK.Input;
 
 using Jack;
 using Jack.Graphics;
@@ -37,6 +38,14 @@ namespace CS_Jack
                 CurrentScene = _testScene;
 
                 DebugLayer.Init(this);
+
+                Input.OnKeyDown += delegate (Key key)
+                {
+                    if (key == Key.F1)
+                    {
+                        DebugLayer.Active = !DebugLayer.Active;
+                    }
+                };
             }
 
             private float _deltaTime = 0;

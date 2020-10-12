@@ -11,7 +11,7 @@ namespace Jack
 {
     public static class DebugLayer
     {
-        public static bool Active { get; set; } = true;
+        public static bool Active { get; set; } = false;
 
         private static JackApp _app;
         private static Camera _camera;

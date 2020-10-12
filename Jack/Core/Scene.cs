@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Jack.Graphics;
+using System.Drawing;
 
 namespace Jack.Core
 {
@@ -10,6 +11,8 @@ namespace Jack.Core
         public Camera Camera { get; set; }
 
         public string Name { get; set; } = "New Scene";
+
+        public Color ClearColor { get; set; } = Color.FromArgb(20, 20, 20);
 
         public Scene(JackApp app)
         {
@@ -22,7 +25,29 @@ namespace Jack.Core
 
         public virtual void OnEnter() { }
         public virtual void OnExit() { }
-        public virtual void Update(float deltaTime) { }
-        public virtual void Draw(SpriteBatch spriteBatch) { }
+        public virtual void Update(float deltaTime)
+        {
+            foreach (Node node in Root.Children)
+            {
+                if (node is IUpdateable updateable)
+                {
+                    updateable.Update(deltaTime);
+                }
+            }
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch)
+        {
+            App.Clear(ClearColor);
+            spriteBatch.Begin(Camera);
+            foreach (Node node in Root.Children)
+            {
+                if (node is IDrawable drawable)
+                {
+                    drawable.Draw(spriteBatch);
+                }
+            }
+            spriteBatch.End();
+        }
     }
 }

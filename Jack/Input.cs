@@ -5,7 +5,6 @@ namespace Jack
 {
     public static class Input
     {
-        // todo: also add keys
         public delegate void MouseButtonEvent(MouseButtonEventArgs e);
         public static event MouseButtonEvent OnMouseDown;
         public static event MouseButtonEvent OnMouseUp;
@@ -45,6 +44,26 @@ namespace Jack
         {
             _mousePosition.X = e.X;
             _mousePosition.Y = e.Y;
+        }
+
+        public delegate void KeyDownEvent(Key key);
+        public static event KeyDownEvent OnKeyDown;
+        public static event KeyDownEvent OnKeyUp;
+
+        public static void KeyDown(object sender, KeyboardKeyEventArgs e)
+        {
+            if (OnKeyDown != null)
+            {
+                OnKeyDown(e.Key);
+            }
+        }
+
+        public static void KeyUp(object sender, KeyboardKeyEventArgs e)
+        {
+            if (OnKeyUp != null)
+            {
+                OnKeyUp(e.Key);
+            }
         }
 
         private static KeyboardState _keyboardState;

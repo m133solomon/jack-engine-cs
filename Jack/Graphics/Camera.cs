@@ -22,6 +22,7 @@ namespace Jack.Graphics
             }
         }
 
+        // todo: fix camera Position
         private Vector2 _position = Vector2.Zero;
         public Vector2 Position
         {

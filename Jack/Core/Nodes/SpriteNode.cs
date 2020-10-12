@@ -13,10 +13,9 @@ namespace Jack.Core.Nodes
 
         public virtual void Update(float deltaTime)
         {
-
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        protected virtual void DrawTextureDefault(SpriteBatch spriteBatch)
         {
             Vector2 size = new Vector2(Texture.Width * GlobalTransform.Scale.X, Texture.Height * GlobalTransform.Scale.Y);
             if (SourceRectangle == Rectangle.Empty)
@@ -27,6 +26,10 @@ namespace Jack.Core.Nodes
             {
                 spriteBatch.Draw(Texture, GlobalTransform.Position, size, GlobalTransform.Rotation, SourceRectangle, Color);
             }
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch)
+        {
         }
     }
 }

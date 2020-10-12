@@ -111,6 +111,7 @@ namespace Jack
             _window.MouseMove += new EventHandler<MouseMoveEventArgs>(Input.MouseMove);
             _window.MouseDown += new EventHandler<MouseButtonEventArgs>(Input.MouseDown);
             _window.MouseUp += new EventHandler<MouseButtonEventArgs>(Input.MouseUp);
+            _window.KeyDown += new EventHandler<KeyboardKeyEventArgs>(Input.KeyDown);
             _window.Run();
         }
 
