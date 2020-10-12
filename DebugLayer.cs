@@ -195,6 +195,12 @@ namespace Jack
                     spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(1.3f), Color.White, _font);
                     sy += _yStep;
                 }
+                else if (property.Name == "Parent")
+                {
+                    string text = string.Format("- Parent: {0}", (propValue as Node).Name);
+                    spriteBatch.DrawString(text, new Vector2(sx + _xStep, sy), new Vector2(1.3f), Color.White, _font);
+                    sy += _yStep;
+                }
                 else
                 {
                     string text = "- " + property.Name + ": " + propValue;

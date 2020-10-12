@@ -33,7 +33,6 @@ namespace Jack.Graphics
                 {
                     return;
                 }
-                _position = value;
                 _hasChanged = true;
             }
         }

@@ -44,6 +44,11 @@ namespace Jack
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
+            // note: i don't advice to do this in a real application
+            // i think it's better to just get the node in load and use it on here
+            // this is for testing
+            PlayerNode player = Root.GetChild<PlayerNode>();
+            Camera.Position = player.GlobalTransform.Position;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -62,13 +67,13 @@ namespace Jack
 
         public class PlayerNode : SpriteNode
         {
-            private Color _color = Color.DeepPink;
             private float _speed = 500.0f;
 
             public PlayerNode() : base()
             {
                 Transform.Position = new Vector2(JackApp.WindowHeight / 2, JackApp.WindowHeight / 2);
                 Transform.Scale = new Vector2(50.0f);
+                Color = Color.DeepPink;
             }
 
             public override void Update(float deltaTime)
@@ -96,34 +101,32 @@ namespace Jack
             public override void Draw(SpriteBatch spriteBatch)
             {
                 base.Draw(spriteBatch);
-                spriteBatch.FillQuad(GlobalTransform.Position, GlobalTransform.Scale, 0, _color);
+                spriteBatch.FillQuad(GlobalTransform.Position, GlobalTransform.Scale, 0, Color);
             }
         }
 
-        public class QuadNode : Node, IUpdateable, IDrawable
+        public class QuadNode : SpriteNode
         {
             private float _dir;
             private float _speed;
-            private Color _color;
-            public Color Color => _color;
 
             public QuadNode(Vector2 position, Vector2 size, Color color, int dir, float speed) : base()
             {
                 Transform.Position = position;
                 Transform.Scale = size;
-                _color = color;
+                Color = color;
                 _dir = dir;
                 _speed = speed;
             }
 
-            public void Update(float deltaTime)
+            public override void Update(float deltaTime)
             {
                 Transform.Rotation += _dir * _speed * deltaTime;
             }
 
-            public void Draw(SpriteBatch spriteBatch)
+            public override void Draw(SpriteBatch spriteBatch)
             {
-                spriteBatch.FillQuad(GlobalTransform.Position, GlobalTransform.Scale, GlobalTransform.Rotation, _color);
+                spriteBatch.FillQuad(GlobalTransform.Position, GlobalTransform.Scale, GlobalTransform.Rotation, Color);
             }
         }
 

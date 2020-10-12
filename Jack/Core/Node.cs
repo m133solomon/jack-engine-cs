@@ -54,6 +54,10 @@ namespace Jack.Core
             Transform = new Transform { Node = this };
         }
 
+        // todo:
+        // remove child<T>
+        // remove children<T>
+
         public void AddChild(Node node)
         {
             // note: adding this gave a 10 fps increase at 5000 quad nodes
@@ -72,10 +76,41 @@ namespace Jack.Core
             {
                 if (node.Id == Children[i].Id)
                 {
-                    node.Parent = null;
-                    Children.RemoveAt(i);
+                    RemoveChildAt(i);
                 }
             }
+        }
+
+        public void RemoveChildAt(int index)
+        {
+            Children[index].Parent = null;
+            Children.RemoveAt(index);
+        }
+
+        // maybe: search for optimization around these methods
+        public T GetChild<T>() where T : class
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] is T child)
+                {
+                    return child as T;
+                }
+            }
+            return default(T);
+        }
+
+        public List<T> GetChildren<T>() where T : class
+        {
+            List<T> result = new List<T>();
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] is T child)
+                {
+                    result.Add(child as T);
+                }
+            }
+            return result;
         }
     }
 }
