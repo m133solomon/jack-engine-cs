@@ -18,6 +18,8 @@ namespace Jack
             int width = JackApp.WindowWidth;
             int height = JackApp.WindowHeight;
 
+            Camera.Origin = new Vector2(width / 2, height / 2);
+
             _font = new SpriteFont("Terminus (TTF)", 37);
 
             Random rand = new Random();
@@ -49,6 +51,15 @@ namespace Jack
             // this is for testing
             PlayerNode player = Root.GetChild<PlayerNode>();
             Camera.Position = player.GlobalTransform.Position;
+
+            if (Input.IsDown(Key.Q))
+            {
+                Camera.Scale *= 1.01f;
+            }
+            else if (Input.IsDown(Key.E))
+            {
+                Camera.Scale *= 0.99f;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

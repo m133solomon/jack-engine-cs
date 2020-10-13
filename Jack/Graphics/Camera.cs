@@ -18,11 +18,13 @@ namespace Jack.Graphics
                 {
                     UpdateViewMatrix();
                 }
-                return _projectionMatrix * _viewMatrix;
+                // i still don't know why this is working
+                // and _pjM * vM not
+                return _viewMatrix * _projectionMatrix;
             }
         }
 
-        // todo: fix camera Position
+        // camera origin is the center of the screen
         private Vector2 _position = Vector2.Zero;
         public Vector2 Position
         {
@@ -34,6 +36,7 @@ namespace Jack.Graphics
                     return;
                 }
                 _hasChanged = true;
+                _position = value;
             }
         }
 
@@ -67,6 +70,21 @@ namespace Jack.Graphics
             }
         }
 
+        private Vector2 _origin = Vector2.Zero;
+        public Vector2 Origin
+        {
+            get => _origin;
+            set
+            {
+                if (_origin == value)
+                {
+                    return;
+                }
+                _origin = value;
+                _hasChanged = true;
+            }
+        }
+
         private int _width;
         private int _height;
         public Rectangle Bounds =>
@@ -88,7 +106,7 @@ namespace Jack.Graphics
         {
             _width = width;
             _height = height;
-            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1.0f, 1.0f);
+            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(-_width / 2, _width / 2, _height / 2, -_height / 2, -1.0f, 1.0f);
         }
 
         private void OnResize()
@@ -98,10 +116,15 @@ namespace Jack.Graphics
 
         private void UpdateViewMatrix()
         {
-            Matrix4 translationMatrix = Matrix4.CreateTranslation(new Vector3(-_position.X, _position.Y, 0.0f));
+            // make it zoom in the center
+            Vector3 translation = new Vector3(-Position - new Vector2(_width / 2, _height / 2));
+
+            Matrix4 translationMatrix = Matrix4.CreateTranslation(translation);
+            Matrix4 originMatrix = Matrix4.CreateTranslation(new Vector3(_origin));
             Matrix4 scaleMatrix = Matrix4.CreateScale(new Vector3(_scale.X, _scale.Y, 1.0f));
             Matrix4 rotationMatrix = Matrix4.CreateRotationZ(_rotation);
-            _viewMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
+            _viewMatrix = translationMatrix * originMatrix * rotationMatrix * scaleMatrix;
             _hasChanged = false;
         }
     }
