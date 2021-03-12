@@ -47,7 +47,7 @@ namespace Jack
         {
             base.Update(deltaTime);
             // note: i don't advise to do this in a real application
-            // i think it's better to just get the node in load and use it on here
+            // i think it's better to just get the node in load and use it here
             // this is for testing
             PlayerNode player = Root.GetChild<PlayerNode>();
             Camera.Position = player.GlobalTransform.Position;
