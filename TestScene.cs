@@ -46,7 +46,7 @@ namespace Jack
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
-            // note: i don't advice to do this in a real application
+            // note: i don't advise to do this in a real application
             // i think it's better to just get the node in load and use it on here
             // this is for testing
             PlayerNode player = Root.GetChild<PlayerNode>();
